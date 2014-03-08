@@ -126,7 +126,15 @@
 		return canvas;
 	};
 	
-	
+	/**
+	 * Get (data)URL from HTMLCanvasElement.
+	 *
+	 * @private
+	 * @method _canvas2url
+	 * @param canvas {HTMLCanvasElement}
+	 * @param options {object} Optional resize parameters: type, quality
+	 * @returns {}
+	 */
 	var _canvas2url = function (canvas, options) {
 		if (DEBUG > 2) console.log("_canvas2img", canvas, options);
 		return (
@@ -144,7 +152,7 @@
 	 * @param canvas {HTMLCanvasElement}
 	 * @param img {HTMLImageElement || jQuery Set of HTMLCanvasElements}
 	 * @param options {object} Optional image parameters: type, quality
-	 * @returns {HTMLCanvasElement || jQuery set of single HTMLCanvasElement}
+	 * @returns {URL}
 	 */
 	var _canvas2img = function (canvas, img, options) {
 		if (DEBUG > 2) console.log("_canvas2img", canvas, img, options);
@@ -232,8 +240,6 @@
 		}
 		return def;
 	};
-	
-	
 	
 	
 	/**
@@ -608,7 +614,7 @@
 	 * @method $.dataURL
 	 * @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
 	 * @param options {Object} Options: multiple, convert, async, width, height, type
-	 * @return {Blob || File || $.Deferred()}
+	 * @return {URL || $.Deferred()}
 	 */
 	$.dataURL = function (source, options) {
 		if (DEBUG) console.info("$.dataURL", source, options);
@@ -933,8 +939,6 @@
 		 * Options:
 		 * - multiple {Boolean} Return array of Blob[s]
 		 * - async {Boolean} Async mode (enables File and Blob sources) method will return $.Deferred for chaining
-		 *
-		 * TODO Add support:
 		 * - type {String} MimeType to be used when drawing img[s]
 		 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
 		 * - width {Integer} Resize width
