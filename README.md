@@ -1,6 +1,9 @@
 # jquery.fn
 Auxiliary jQuery plugins
 
+# License
+Copyright (c) 2014 Wendelin Thomas.
+See the [LICENSE](LICENSE.md) file for license rights and limitations (MIT).
 
 ##jquery.draw.js:
 
