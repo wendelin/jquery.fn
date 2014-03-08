@@ -1,11 +1,10 @@
-jquery.fn
-=========
-
+# jquery.fn
 Auxiliary jQuery plugins
 
 
-jquery.draw.js:
-=========
+##jquery.draw.js:
+
+### $.draw(source, target, options)
 Drawing method takes visual data from a single given source and "draws" it into each element
 of the context jQuery element set.
 
@@ -36,14 +35,17 @@ options:
 - maxWidth {Integer} Max width constraint
 - maxHeight {Integer} Max height constraint
 
+
+```
 @public
 @method $.draw
 @param source {URL || HTMLElement || jQuery set || File || Blob}
 @param target {HTMLElement || jQuery set} If undefined a new HTMLCanvasElement is used
 @param options {Object} Options: type, width, height, scale, async
 @returns {Object} target or if async=true $.Deferred instance that when successful returns the target
-==
+```
 
+### $.blob(source, options)
 Get a Blob
 
 Options:
@@ -54,12 +56,15 @@ Options:
 - width {Integer} Resize image width
 - height {Integer} Resize image height
 
+```
 @method $.blob
 @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
 @param options {Object} Options: multiple, convert, async, width, height, type
 @return {Blob || File || $.Deferred()}
-==
+```
 
+
+### $.dataURL(source, options)
 Get dataURL[s]
 
 Options:
@@ -70,8 +75,9 @@ Options:
 - width {Integer} Resize image width
 - height {Integer} Resize image height
 
+```
 @method $.dataURL
 @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
 @param options {Object} Options: multiple, convert, async, width, height, type
 @return {Blob || File || $.Deferred()}
-
+```
