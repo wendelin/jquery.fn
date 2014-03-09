@@ -1,5 +1,5 @@
 (function($){
-	var DEBUG = 3;
+	var DEBUG = 4;
 	
 	/**
 	 * Convert number of bytes to human readable format.
@@ -63,6 +63,15 @@
 			 * For video resizing use actual video dimensions rather then those of the HTMLVideoElement.
 			 */
 			var isVideoResize = $item.is("video") && (resize.width || resize.height);
+			
+			/*
+			TODO: throw error if video element is "empty" (width & height === 0)
+			*/
+			if ($item.is("video") && !$item.prop("videoWidth")&& !$item.prop("videoHeight")) {
+				$.error("HTMLVideoElement is empty!");
+			}
+
+			
 			width  = (isVideoResize) ? item.videoWidth  : item.width  || $item.width();
 			height = (isVideoResize) ? item.videoHeight : item.height || $item.height();
 			
@@ -192,14 +201,14 @@
 	 * it is appended to the body.
 	 *
 	 * @private
-	 * @function async_urlToCanvas
+	 * @function async_url2Canvas
 	 * @param url {URL}
 	 * @param canvas {HTMLCanvasElement || jQuery Set of HTMLCanvasElements}
  	 * @param resize {object} Optional resize parameters: width, height, maxWidth, maxHeight, scale
 	 * @returns {$.Deferred instance}
 	 */
-	var async_urlToCanvas = function (url, canvas, resize) {
-		if (DEBUG > 2) console.log("async_urlToCanvas", url, canvas, resize);
+	var async_url2Canvas = function (url, canvas, resize) {
+		if (DEBUG > 2) console.log("async_url2Canvas", url, canvas, resize);
 		return async_url2img(url, document.createElement("img")).then(function(img){
 			img.style.position = "absolute";
 			img.style.left = "-99999px";
@@ -211,7 +220,9 @@
 				return canvas;
 			} catch (err) {
 				img.parentNode.removeChild(img);
-				return new $.Deferred.reject(err);
+				var def = new $.Deferred();
+				def.reject(err);
+				return def;
 			}
 		});
 	};
@@ -231,7 +242,7 @@
 		if (!/^image\//.test(blob.type)) return new $.Deferred().reject("Cannot draw blob to canvas. Wrong data type: " + blob.type);
 		try {
 			var url = $.blob.createURL(blob),
-				def = async_urlToCanvas(url, canvas, resize)
+				def = async_url2Canvas(url, canvas, resize)
 					.always(function(){
 						$.blob.revokeURL(url);
 					});
@@ -283,21 +294,30 @@
 	$.draw = function (source, target, options) {
 		if (DEBUG) console.info("$.draw", source, target, options);
 		options = $.isPlainObject(options) ? options : {width:null, height:null, scale:true, type:options, async: false};
-		source = $(source).get(0);	// Remove jQuery wrapping on source
+		source = $.dataURL.is(source) ? $.dataURL.toBlob(source) : $(source).get(0);	// Remove jQuery wrapping on source
 		
 		if (!$(target).is("img,canvas")) {
 			$.error("$.draw: Target type not supported: " + target);
 		}
 		
 		if (options.async) {
-			source = $(source).is('input[type="file"]') ? source.files[0] : source;
+			source = (
+				$(source).is('input[type="file"]')
+				? source.files[0]
+				: (
+					$(source).is('input,select,textarea')
+					? $(source).val()
+					: source
+				)
+			);
 			
 			var def = new $.Deferred();
 			
 			var canvas;
 			if ($(target).is("canvas")) {
-				canvas = target;
-				target = null;
+				canvas = $(target).filter("canvas").get(0);
+				target = $(target).not(canvas);
+				if (!target.size()) target = null;
 			} else {
 				canvas = document.createElement("canvas");
 			}
@@ -307,9 +327,9 @@
 					(source instanceof Blob)
 					? async_blob2Canvas(source, canvas, options)
 					: (
-						(typeof(s) === "string")
+						(typeof(source) === "string")
 						? async_url2Canvas(source, canvas, options)
-						: _elementToCanvas(source, canvas, resize)
+						: _elementToCanvas(source, canvas, options)
 					)
 				);
 			} catch (err) {
@@ -321,11 +341,14 @@
 			
 			if (target) {
 				chain = chain.then(function(canvas){
+					try {
 					_canvas2img(canvas, target, {
 						type: options.type,
 						quality: options.quality
 					});
-					
+					} catch (err) {
+						def.reject(err);
+					}
 					return target;
 				});
 			}
@@ -666,7 +689,7 @@
 				});
 			
 			} else if (options.convert) {
-				stack = [async_urlToCanvas(stack[0], document.createElement("canvas"), options)
+				stack = [async_url2Canvas(stack[0], document.createElement("canvas"), options)
 				.then(function(canvas){
 					return _canvas2url(canvas, options)
 				})];
@@ -771,7 +794,7 @@
 			if (!(url && typeof(url) === "string" && /^data:/.test(url))) return false;
 			var type = $.dataURL.type(url);
 			return (
-				(str.indexOf("/") === -1)
+				(str && str.indexOf("/") === -1)
 				? (new RegExp("^" + str + "\/")).test(type)
 				: str === type
 			);

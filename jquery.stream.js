@@ -262,7 +262,6 @@ $.getUserMedia({video:true})
 			options = $.isPlainObject(options) ? options : {autoplay:!!options};
 			qType = qType || "fx";
 			
-			
 			if (DEBUG) console.info("$.fn.stream", this, stream, options, qType);
 			
 			if (stream instanceof MediaStream) {

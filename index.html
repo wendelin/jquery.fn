@@ -15,263 +15,334 @@
 	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	
 	<style>
-	.tabView .nav-tabs {
+	body {
+		padding: 10px 15px 0;
 	}
-	.tabView .tab-content.panel {
+	._tabView .tab-content.panel {
 		border-radius: 0 0 4px 4px;
 		border-top: 0px none;
 	}
-	.tabView .tab-pane {
-		padding: 10px 15px 0;
+	._tabView .tab-pane {
+		padding: 15px;
+	}
+	
+	/* derived from: http://geniuscarrier.com/how-to-style-a-html-file-upload-button-in-pure-css/ */
+	/* TODO: cleanup these cssRules */
+	._input-group-file-upload {}
+	._file-upload-wrap.input-group-addon {
+		border: 0 none;
+		padding: 0;
+	}
+	._file-upload {
+		overflow: hidden;
+		position: relative;
+	}
+	._input-group-file-upload .btn._file-upload {
+		border-bottom-left-radius: 0;
+		border-top-left-radius: 0;
+	}
+	._file-upload input._upload {
+		cursor: pointer;
+		font-size: 20px;
+		margin: 0;
+		opacity: 0;
+		padding: 0;
+		position: absolute;
+		right: 0;
+		top: 0;
 	}
 	</style>
+	<script>
+	$(function(){
+		$("[data-control='btn-upload']").each(function(){
+			var $this = $(this),
+				$pseudoLabel = $this.find("input[type='text']"),
+				$inputFile = $this.find("input[type='file']");
+			
+			$inputFile.on("change", function(){
+				$pseudoLabel.val(this.value);
+			}).trigger("change");
+		});
+		
+		$("[data-control='video']").each(function(){
+			var $this = $(this),
+				$video = $this.find("video"),
+				$play = $this.find("[data-video='play']"),
+				$pause = $this.find("[data-video='pause']").hide(),
+				$stop = $this.find("[data-video='stop']");
+			
+			$play.on("click", function(e){
+				e.preventDefault();
+				$play.hide();
+				$video.prop("networkState")
+				? $video.stream("play")
+				: $video.stream("video",true);
+				$pause.show();
+			});
+			
+			$pause.on("click", function(e){
+				e.preventDefault();
+				$pause.hide();
+				$video.stream("pause");
+				$play.show();
+			});
+			
+			$stop.on("click", function(e){
+				e.preventDefault();
+				$pause.hide();
+				$video.stream("stop");
+				$play.show();
+			});
+		});
+		
+		
+		var $fsource = $("#source"),
+			$fsettings = $("#settings");
+		
+		var $sConvert = $fsettings.find("input[name='convert']"),
+			$sType = $fsettings.find("select[name='type']"),
+			$sQuality = $fsettings.find("input[name='quality']"),
+			$sOpts = $fsettings.find(".panel-body").find("input,select,textarea");
+		
+		$sConvert.on("change", function(){
+			$sOpts.prop("disabled", !this.checked);
+		}).trigger("change");
+		
+		$sType.on("change", function(){
+			$sQuality.prop("disabled", $(this).val() !== "image/jpeg");
+		}).trigger("change");
+		
+		
+		var getFormData = function ($f) {
+			return $.extend.apply($.extend, [{}].concat(
+				$.map($f.serializeArray(), function(v,i){
+					var o = {};
+					o[v.name] = (
+						v.value === "true" 
+						? true
+						: (
+							/^\d+(\.\d+)?$/.test(v.value)
+							? parseFloat(v.value)
+							: v.value
+						)
+					);
+					return o;
+				})
+			));
+		};
+		
+		
+		/* adapted from: http://api.jquery.com/jQuery.extend/ */
+		var stringify = typeof JSON !== "undefined" ? JSON.stringify : function( obj ) {
+			var arr = [];
+			$.each( obj, function( key, val ) {
+				var next = key + ": ";
+				next += $.isPlainObject( val ) ? stringify( val ) : val;
+				arr.push( next );
+			});
+			return "{ " + arr.join( ", " ) + " }";
+		};
+		$("#tab_draw .btn").on("click", function(){
+			var sourceRef = getFormData($fsource).source,
+				targetRef = "#tab_draw img",
+				$source = $fsource.find(sourceRef),
+				options = $.extend(
+					{
+						async: true,
+						convert: false,
+						scale: false
+					},
+					getFormData($fsettings)
+				);
+			$("#tab_draw code").text(
+				'$("' + targetRef + '").draw('
+					+ '$("' + sourceRef + '")'
+					+ ', '
+					+ stringify(options)
+				+');'
+			);
+			
+			$.draw($source, targetRef, options)
+			.then(console.info, console.warn);
+			
+			
+		});
+	});
+	</script>
 </head>
 <body>
-	<div class="tabView">
-		<ul class="nav nav-tabs">
-			<li class="active">
-				<a href="#tab0" data-toggle="tab">
-					<span class="glyphicon glyphicon-info-sign"></span>
-					dataURL
-				</a>
-			</li>
-		</ul>
-		<div class="tab-content panel panel-default">
-			<div id="tab0" class="tab-pane active">
-				<div class="row">
-					<div class="col-md-4">
-						<form class="form-horizontal">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<div class="panel-title">
-										<span class="glyphicon glyphicon-file"></span>
-										Source file
-									</div>
-								</div>
-								<div class="panel-body">
-									<input type="file" required="required"/>
-								</div>
-							</div>
-						</form>
-							
-						<form class="form-horizontal" data-role="settings">
-							<div class="panel panel-default">
-								<div class="panel-heading">
-									<div class="panel-title">
-										<span class="glyphicon glyphicon-cog"></span>
-										Convert
-										<input name="convert" type="checkbox" checked="checked" value="1" />
-									</div>
-								</div>
-								<div class="panel-body">
-									<div class="form-group">
-										<div class="col-sm-offset-2 col-sm-10">
-											<div class="checkbox">
-												<label class="control-label">scale
-													<input name="scale" type="checkbox" checked="checked" value="1" />
-												</label>
-											</div>
-										</div>
-									</div>
-									
-									<div class="form-group">
-										<label class="col-sm-2 control-label">width</label>
-										<div class="col-sm-10">
-											<input name="width" type="range" min="10" max="300" step="10" value="100" class="form-control"/>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-2 control-label">height</label>
-										<div class="col-sm-10">
-											<input name="height" type="range" min="10" max="300" step="10" value="100" class="form-control"/>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-2 control-label">maxWidth</label>
-										<div class="col-sm-10">
-											<input name="maxWidth" type="range" min="10" max="500" step="10" value="5	00" class="form-control"/>
-										</div>
-									</div>
-									<div class="form-group">
-										<label class="col-sm-2 control-label">maxHeight</label>
-										<div class="col-sm-10">
-											<input name="maxHeight" type="range" min="10" max="500" step="10" value="500" class="form-control"/>
-										</div>
-									</div>
-									
-									<div class="form-group">
-										<label class="col-sm-2 control-label">type</label>
-										<div class="col-sm-10">
-											<select name="type" class="form-control">
-												<option value="image/png">image/png</option>
-												<option value="image/jpeg">image/jpeg</option>
-											</select>
-										</div>
-									</div>
-									
-									<div class="form-group">
-										<label class="col-sm-2 control-label">(jpeg) quality</label>
-										<div class="col-sm-10">
-											<input name="quality" type="range" min="0" max="1" step="0.01" value="1" class="form-control"/>
-										</div>
-									</div>
-								</div>
-							</div>
-						</form>
+	<div class="row">
+		<div class="col-md-4">
+			<form id="source" class="form-horizontal">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="panel-title">
+							<span class="glyphicon glyphicon-file"></span>
+							Source
+						</div>
 					</div>
-					
-					<div class="col-md-8">
-						<div class="tabView">
-							<ul class="nav nav-tabs">
-								<li class="active">
-									<a href="#tab0_info" data-toggle="tab">
-										<span class="glyphicon glyphicon-info-sign"></span>
-										info
-									</a>
-								</li>
-								<li>
-									<a href="#tab0_url" data-toggle="tab">
-										<span class="glyphicon glyphicon-link"></span>
-										url
-									</a>
-								</li>
-							</ul>
-							<div class="tab-content panel panel-default">
-								<div id="tab0_info" class="tab-pane active">
-									<table class="table table-striped table-bordered" style="width:100%">
-										<tbody>
-											<tr>
-												<td><b>type</b></th>
-												<td data-bind="type"></td>
-											</tr>
-											<tr>
-												<td><b>rawSize</b></td>
-												<td data-bind="rawSize"></td>
-											</tr>
-											<tr>
-												<td><b>size</b></td>
-												<td data-bind="size"></td>
-											</tr>
-											<tr>
-												<td><b>image</b></th>
-												<td>
-													<figure data-bind="url" class="thumbnail pull-left"></figure>
-												</td>
-											</tr>
-											<tr>
-												<td></td>
-												<td>
-													<button class="btn btn-primary" role="button" data-bind="url">
-														<span class="glyphicon glyphicon-download-alt"></span>
-														Download
-													</button>
-												</td>
-											</tr>
-										<tbody>
-									</table>
-								</div>
-								<div id="tab0_url" class="tab-pane">
-									<table class="table table-striped table-bordered" style="width:100%">
-										<tbody>
-											<tr>
-												<td><b>url</b></td>
-												<td><textarea data-bind="url" class="form-control" rows="12"></textarea></td>
-											</tr>
-										</body>
-									</table>
+					<div class="panel-body">
+						
+						
+						<div data-control="btn-upload" class="input-group _input-group-file-upload">
+							<label class="input-group-addon" title="File">
+								<span class="glyphicon glyphicon-file"></span>
+								<input name="source" type="radio" value="input[type='file']" checked="checked"/>
+							</label>
+							<input type="text" class="form-control" placeholder="Choose File" disabled="disabled" />
+							<span class="input-group-addon _file-upload-wrap">
+								<span class="btn btn-primary _file-upload">
+									Upload
+									<input type="file" class="_upload" />
+								</span>
+							</span>
+						</div>
+						<br/>
+						<div data-control="video" class="input-group">
+							<label class="input-group-addon" title="Webcam">
+								<span class="glyphicon glyphicon-facetime-video"></span>
+								<input name="source" type="radio" value="video"/>
+							</label>
+							<div class="form-control" style="height:auto;padding:0;">
+								<video style="height: 100% !important; vertical-align: middle;width: 100% !important;"></video>
+							</div>
+							<span class="input-group-addon btn-group-vertical">
+								<a data-video="play" href="#play" id="playBtn" class="btn btn-default">
+									<span class="glyphicon glyphicon-play"></span>
+								</a>
+								<a data-video="pause" href="#pause" id="pauseBtn" class="btn btn-default">
+									<span class="glyphicon glyphicon-pause"></span>
+								</a>
+								<a data-video="stop" href="#stop" id="stopBtn" class="btn btn-default">
+									<span class="glyphicon glyphicon-stop"></span>
+								</a>
+							</span>
+						</div>
+						<br/>
+						
+						<div class="input-group">
+							<label class="input-group-addon" title="URL">
+								<span class="glyphicon glyphicon-link"></span>
+								<input name="source" type="radio" value="input[type='url']"/>
+							</label>
+							<input type="url" class="form-control">
+						</div>
+						
+						
+					</div>
+				</div>
+			</form>
+			
+			<form id="settings" class="form-horizontal" data-role="settings">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<div class="panel-title">
+							<span class="glyphicon glyphicon-cog"></span>
+							Convert
+							<input name="convert" type="checkbox" checked="checked" value="true" />
+						</div>
+					</div>
+					<div class="panel-body">
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<div class="checkbox">
+									<label class="control-label">scale
+										<input name="scale" type="checkbox" checked="checked" value="true" />
+									</label>
 								</div>
 							</div>
 						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">width</label>
+							<div class="col-sm-10">
+								<input name="width" type="range" min="10" max="300" step="10" value="100" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">height</label>
+							<div class="col-sm-10">
+								<input name="height" type="range" min="10" max="300" step="10" value="100" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">maxWidth</label>
+							<div class="col-sm-10">
+								<input name="maxWidth" type="range" min="10" max="500" step="10" value="5	00" class="form-control"/>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 control-label">maxHeight</label>
+							<div class="col-sm-10">
+								<input name="maxHeight" type="range" min="10" max="500" step="10" value="500" class="form-control"/>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">type</label>
+							<div class="col-sm-10">
+								<select name="type" class="form-control">
+									<option value="image/png">image/png</option>
+									<option value="image/jpeg">image/jpeg</option>
+								</select>
+							</div>
+						</div>
+						
+						<div class="form-group">
+							<label class="col-sm-2 control-label">(jpeg) quality</label>
+							<div class="col-sm-10">
+								<input name="quality" type="range" min="0" max="1" step="0.01" value="1" class="form-control"/>
+							</div>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		
+		<div class="col-md-8">
+			<div class="_tabView">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#tab_draw" data-toggle="tab">
+							<span class="glyphicon glyphicon-picture"></span>
+							$.draw
+						</a>
+					</li>
+					<li>
+						<a href="#tab0_url" data-toggle="tab">
+							<span class="glyphicon glyphicon-link"></span>
+							url
+						</a>
+					</li>
+				</ul>
+				<div class="tab-content panel panel-default">
+					<div id="tab_draw" class="tab-pane active">
+						<table class="table table-striped table-bordered" style="width:100%">
+							<tbody>
+								<tr>
+									<td><b>img</b></th>
+									<td><img alt="target image"/></td>
+								</tr>
+								<tr>
+									<td><b>code</b></td>
+									<td><code></code></td>
+								</tr>
+							<tbody>
+						</table>
+						
+						<button class="btn btn-primary">draw</button>
 					</div>
 					
-					<script>
-					$(function(){
-						var $tab = $("#tab0"),
-							$inputSource = $tab.find("input[type='file']"),
-							$formSettings = $tab.find("form[data-role='settings']"),
-							$settingConvert = $tab.find("input[name='convert']"),
-							$settingType = $tab.find("select[name='type']"),
-							$settingQuality = $tab.find("input[name='quality']"),
-							$tabView = $tab.find(".tabView"),
-							$bindings = $tab.find("[data-bind]");
-						
-						
-						$tab.find("form").on("change", function(){
-							var blob = $.blob($inputSource);
-							
-							var isImage = $.blob.is(blob, "image");
-							
-							$formSettings.find("input,select,textarea").prop("disabled", !isImage);
-							
-							if (!blob) return;
-							
-							var options = $.extend.apply($.extend, [{scale:false, async:true}].concat(
-								$.map($formSettings.serializeArray(), function(v,i){
-									var o = {}; o[v.name] = v.value; return o;
-								})
-							));
-							
-							$.dataURL(blob, options)
-							.then(function(url){
-								var data = {
-									url: url,
-									type: $.dataURL.type(url),
-									size: $.dataURL.size(url, true),
-									rawSize: $.dataURL.rawSize(url, true)
-								};
-								
-								$bindings.each(function(){
-									var $this = $(this),
-										value = data[$this.attr("data-bind")];
-									
-									if ($this.is("input,select,textarea")) {
-										$this.val(value||"");
-										
-									} else if ($this.is("figure")) {
-										$this.empty();
-										if (value) {
-											$("<img/>")
-												.prop("src",value)
-												.css("cursor","pointer")
-												.appendTo($this)
-												.on("click",function(){
-													$(this).save();
-												})
-												.one("load", function(){
-													$('<figcaption class="caption"></figcaption>')
-														.text(this.width + " x " + this.height)
-														.appendTo($this);
-												});
-										}
-										
-									} else if ($this.is("img")){
-										$this.prop("src",value);
-										
-									} else if ($this.is("button")){
-										$this.prop("onclick",function(){
-											return function(){
-												$.dataURL.save(value);
-											};
-										});
-									} else {
-										$this.empty().text(value||"-");
-									}
-								});
-							})
-							
-							
-						});
-						
-						$settingConvert.on("change", function(){
-							$formSettings.prop("disabled", $(this).prop("checked"));
-						});
-						
-						$settingType.on("change", function(){
-							$settingQuality.prop("disabled", $(this).val() !== "image/jpeg");
-						})
-						.trigger("change");
-					});
-					</script>
+					<div id="tab0_url" class="tab-pane">
+						<table class="table table-striped table-bordered" style="width:100%">
+							<tbody>
+								<tr>
+									<td><b>url</b></td>
+									<td><textarea data-bind="url" class="form-control" rows="12"></textarea></td>
+								</tr>
+							</body>
+						</table>
+					</div>
 				</div>
 			</div>
 		</div>
