@@ -64,13 +64,13 @@
 			 */
 			var isVideoResize = $item.is("video") && (resize.width || resize.height);
 			
-			/*
-			TODO: throw error if video element is "empty" (width & height === 0)
-			*/
+			/**
+			 * throw error if video element is "empty" (width & height == 0)
+			 */
 			if ($item.is("video") && !$item.prop("videoWidth")&& !$item.prop("videoHeight")) {
 				$.error("HTMLVideoElement is empty!");
 			}
-
+			
 			
 			width  = (isVideoResize) ? item.videoWidth  : item.width  || $item.width();
 			height = (isVideoResize) ? item.videoHeight : item.height || $item.height();
@@ -333,8 +333,7 @@
 					)
 				);
 			} catch (err) {
-				console.warn(err);
-				return def.resolve(err);
+				return def.reject(err);
 			}
 			
 			var chain = $.when(source);

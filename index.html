@@ -154,7 +154,7 @@
 					},
 					getFormData($fsettings)
 				);
-			$("#tab_draw code").text(
+			$("#tab_draw code.a").text(
 				'$("' + targetRef + '").draw('
 					+ '$("' + sourceRef + '")'
 					+ ', '
@@ -162,9 +162,15 @@
 				+');'
 			);
 			
-			$.draw($source, targetRef, options)
-			.then(console.info, console.warn);
-			
+			var def = $.draw($source, targetRef, options);
+			def.then(console.info, console.warn);
+			def.fail(function(err){
+				$('<div class="alert alert-warning fade in"></div>')
+				.text(err)
+				.prepend('<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>')
+				.prependTo("body")
+				.alert();
+			});
 			
 		});
 	});
@@ -177,13 +183,11 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="panel-title">
-							<span class="glyphicon glyphicon-file"></span>
-							Source
+							<span class="glyphicon glyphicon-list"></span>
+							Sources
 						</div>
 					</div>
 					<div class="panel-body">
-						
-						
 						<div data-control="btn-upload" class="input-group _input-group-file-upload">
 							<label class="input-group-addon" title="File">
 								<span class="glyphicon glyphicon-file"></span>
