@@ -145,7 +145,7 @@
 	 * @returns {}
 	 */
 	var _canvas2url = function (canvas, options) {
-		if (DEBUG > 2) console.log("_canvas2img", canvas, options);
+		if (DEBUG > 2) console.log("_canvas2url", canvas, options);
 		return (
 			(/^image\/(jpeg|webp)$/.test(options.type))
 			? canvas.toDataURL(options.type, ((options.quality||1)/1))
@@ -153,7 +153,7 @@
 		);
 	};
 	
-	/**
+	/** JUNK
 	 * Draw HTMLCanvasElement to HTMLImageElement.
 	 *
 	 * @private
@@ -162,12 +162,12 @@
 	 * @param img {HTMLImageElement || jQuery Set of HTMLCanvasElements}
 	 * @param options {object} Optional image parameters: type, quality
 	 * @returns {URL}
-	 */
 	var _canvas2img = function (canvas, img, options) {
 		if (DEBUG > 2) console.log("_canvas2img", canvas, img, options);
 		$(img).attr("src", _canvas2url(canvas, options));
 		return img;
 	};
+	*/
 	
 	/**
 	 * Asynchronous draw url into a HTMLImageElement.
@@ -336,23 +336,46 @@
 				return def.reject(err);
 			}
 			
-			var chain = $.when(source);
 			
 			if (target) {
-				chain = chain.then(function(canvas){
+				$.when(source).then(function(canvas){
 					try {
-					_canvas2img(canvas, target, {
-						type: options.type,
-						quality: options.quality
-					});
+						var url = _canvas2url(canvas, options);
+					/**
+					 * Catch:
+					 * [
+					 *     Exception... "The operation is insecure." 
+					 *     code: "18"
+					 *     nsresult: "0x80530012 (SecurityError)"
+					 *     location: "<unknown>"
+					 * ]
+					 */
 					} catch (err) {
+						console.warn(err);
+						console.warn(err+"");
 						def.reject(err);
+						return;
 					}
-					return target;
-				});
+					var list = $(target).map(function(){
+							var d = new $.Deferred();
+							this.onload = function () {
+								d.resolve(this);
+							}
+							this.onerror = function (err) {
+								d.reject(err);
+							};
+							this.src = url;
+							
+							return d
+						});
+					
+					$.when.apply($.when,list).then(def.resolve, def.reject, def.notify);
+					
+				}, def.reject, def.notify)
+				
+			} else {
+				$.when(source).then(def.resolve, def.reject, def.notify);
 			}
-			
-			chain.then(def.resolve, def.reject, def.notify);
 			
 			return def;
 		}
@@ -361,13 +384,17 @@
 		 * Use proxy if target is not a canvas
 		 */
 		if (!$(source).is("canvas")) {
-			source = _elementToCanvas(source, document.createElement("canvas"), options);
+			try {
+				source = _elementToCanvas(source, document.createElement("canvas"), options);
+			} catch (err) {
+				$.error(err + "\r" + '=> Try async mode if you want to use as source: Blob|File|input[type="file"]');
+			}
 		}
 		
-		_canvas2img(source, target, {
+		$(target).attr("src",_canvas2url(canvas, {
 			type: options.type,
 			quality: options.quality
-		});
+		}));
 		
 		return target;
 	};
@@ -800,16 +827,40 @@
 		}
 	});
 	
+	
 	/**
-	 * TODO: $.save
-	 *   allow for all kinds of input:
-	 *   - Blob, {name:"some file"}
-	 *   - File, {name:"override name}
-	 *   - dataURL, {name:"some file"}
-	 *   - <img>, ¿{name:"override name"}?		// Can autodetect name?
-	 *   - <canvas>, {name:"some file"}
-	 *   - <video>, {name:"some file"}
+	 * Save file
+	 *
+	 * Options:
+	 * - async {Boolean} Wrap response in a $.Deferred
+	 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
+	 * - type {String} Image mimetype to default to or if (convert) to enforce
+	 * - width {Integer} Resize image width
+	 * - height {Integer} Resize image height
+	 * - name {String} File name to be used
+	 *
+	 * @method $.save
+	 * @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
+	 * @param options {Object} Options: convert, async, width, height, type, name
 	 */
+	$.save = function (source, options) {
+		options = $.extend(options||{}, {async:true});
+		
+		if (options.convert) {
+			$.blob(source, options).then(function(blob){
+				$.blob.save(blob, options.name);
+			});
+		
+		} else if ($.blob.is(item)) {
+			$.blob.save(blob, options.name);
+			
+		} else if ($.dataURL.is(item)) {
+			$.dataURL.save(item, name);
+			
+		} else {
+			$(item).save({name:name});
+		}
+	};
 	
 	$.fn.extend({
 		/**
