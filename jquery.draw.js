@@ -1,5 +1,5 @@
 (function($){
-	var DEBUG = 4;
+	var DEBUG = 3;
 	
 	/**
 	 * Convert number of bytes to human readable format.
@@ -183,6 +183,7 @@
 	var async_url2img = function (url, img) {
 		if (DEBUG > 2) console.log("async_url2img", url, img);
 		var def = new $.Deferred();
+		if (!url) def.reject("Empty source");
 		img.onload = function () {
 			def.resolve(img);
 		};
@@ -265,6 +266,9 @@
 	 * - Blob, "
 	 * - URL, any valid URL will do: dataURL, Blob URL, normal URL, whatever
 	 *
+	 * NOT supported sources are:
+	 * - CSS selector // The only string inputs permitted are URLs (for now)
+	 *
 	 * Supported targets
 	 * - HTMLCanvasElement
 	 * - HTMLImageElement
@@ -294,22 +298,30 @@
 	$.draw = function (source, target, options) {
 		if (DEBUG) console.info("$.draw", source, target, options);
 		options = $.isPlainObject(options) ? options : {width:null, height:null, scale:true, type:options, async: false};
-		source = $.dataURL.is(source) ? $.dataURL.toBlob(source) : $(source).get(0);	// Remove jQuery wrapping on source
+		source = (
+			$.dataURL.is(source)
+			? $.dataURL.toBlob(source)
+			: (
+				typeof(source) === "object"
+				? $(source).get(0)	// Remove jQuery wrapping on source
+				: source
+			)
+		);
 		
 		if (!$(target).is("img,canvas")) {
 			$.error("$.draw: Target type not supported: " + target);
 		}
 		
 		if (options.async) {
-			source = (
-				$(source).is('input[type="file"]')
-				? source.files[0]
-				: (
-					$(source).is('input,select,textarea')
-					? $(source).val()
-					: source
-				)
-			);
+			var origTarget = target;	// Keep reference to original target to return it later
+			
+			if (source.tagName && /^(input|select|textarea)$/.test(source.tagName.toLowerCase())) {
+				source = (
+					source.type === "file"
+					? source.files[0]
+					: $(source).val()
+				);
+			}
 			
 			var def = new $.Deferred();
 			
@@ -336,7 +348,6 @@
 				return def.reject(err);
 			}
 			
-			
 			if (target) {
 				$.when(source).then(function(canvas){
 					try {
@@ -352,29 +363,37 @@
 					 */
 					} catch (err) {
 						console.warn(err);
-						console.warn(err+"");
+						console.warn(err + "");
 						def.reject(err);
 						return;
 					}
 					var list = $(target).map(function(){
 							var d = new $.Deferred();
+							var debug = {el:this};
+							d.notify(debug);
 							this.onload = function () {
 								d.resolve(this);
+								debug.state = "resolved";
 							}
 							this.onerror = function (err) {
 								d.reject(err);
+								debug.state = err;
 							};
 							this.src = url;
 							
-							return d
+							return d;
 						});
 					
-					$.when.apply($.when,list).then(def.resolve, def.reject, def.notify);
+					$.when.apply($.when,list).then(function(){
+						def.resolve(origTarget);
+					}, def.reject, def.notify);
 					
 				}, def.reject, def.notify)
 				
 			} else {
-				$.when(source).then(def.resolve, def.reject, def.notify);
+				$.when(source).then(function(){
+					def.resolve(origTarget);
+				}, def.reject, def.notify);
 			}
 			
 			return def;
