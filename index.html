@@ -10,9 +10,12 @@
 	<script src="./jquery.media.js"></script>
 	<script src="./jquery.draw.js"></script>
 	
+	
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap-theme.min.css" />
 	<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+	
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" />
 	
 	<style>
 	body {
@@ -159,29 +162,19 @@
 					+ stringify(options)
 				+');'
 			);
-			/*
-			var def = $.draw($source, targetRef, options);
-			def.then(console.info, console.warn);
-			def.fail(function(err){
-				$('<div class="alert alert-warning fade in"></div>')
-				.text(err)
-				.prepend('<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>')
-				.prependTo("body")
-				.alert();
-			});
-			*/
 			
-			var $div = $('\
-						<div class="alert alert-info fade in clearfix">\
-							<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>\
-							<div class="media invisible" style="position:absolute">\
-								<a class="thumbnail pull-left">\
-									<img class="media-object" />\
-								</a>\
-								<div class="media-body"></div>\
-							</div>\
-						</div>\
-					')
+			var $div = $([
+					'<div class="alert alert-info fade in clearfix">',
+						'<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>',
+							'<div class="media invisible" style="position:absolute">',
+								'<a class="thumbnail pull-left">',
+									'<img class="media-object" />',
+								'</a>',
+								'<div class="media-body"></div>',
+							'</div>',
+							'<i class="fa fa-spinner fa-spin fa-3x"></i>',
+						'</div>'
+					].join(""))
 					.prependTo("#output")
 					.alert(),
 				$img = $div.find("img");
@@ -189,18 +182,24 @@
 			
 			
 			var def = $.draw($source, $img, options);
-			def.then(console.info, console.warn);
+			def.then(console.info,console.warn,console.log);
+			
+			def.always(function(){
+				$div.find(".fa-spinner").remove();
+			});
 			
 			def.then(
 				function(img){
+					img = $(img).get(0);
 					$div.find("a").on("click", function(e){
 						e.preventDefault()
 						$(this).find("img").save();
 					}).prop("href","#save");
 					
 					$div.find(".media-body").html(
-						$.dataURL.type($img.prop("src")) + "<br />" +
-						$img.prop("width") + "x" + $img.prop("height")
+						$.dataURL.type(img.src) + "<br />" +
+						img.width + "x" + img.height + "<br />" + 
+						$.dataURL.size(img.src, true)
 					);
 					
 					$div
@@ -210,9 +209,9 @@
 					
 				},
 				function(err){
-					//console.warn(arguments);
+					// console.warn(arguments);
 					$div
-						.append(err)
+						.append(err + "")
 						.removeClass("alert-info")
 						.addClass("alert-warning")
 						.find("a").remove();
@@ -231,20 +230,20 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="panel-title">
-							<span class="glyphicon glyphicon-list"></span>
+							<i class="fa fa-list"></i>
 							Sources
 						</div>
 					</div>
 					<div class="panel-body">
 						<div data-control="btn-upload" class="input-group _input-group-file-upload">
 							<label class="input-group-addon" title="File">
-								<span class="glyphicon glyphicon-file"></span>
+								<i class="fa fa-file"></i>
 								<input name="source" type="radio" value="input[type='file']" checked="checked" />
 							</label>
 							<input type="text" class="form-control" placeholder="Choose File" disabled="disabled" />
 							<span class="input-group-addon _file-upload-wrap">
 								<span class="btn btn-primary _file-upload">
-									<span class="glyphicon glyphicon-search"></span>
+									<i class="fa fa-search"></i>
 									Browse
 									<input type="file" class="_upload" />
 								</span>
@@ -253,7 +252,7 @@
 						<br />
 						<div data-control="video" class="input-group">
 							<label class="input-group-addon" title="Webcam">
-								<span class="glyphicon glyphicon-facetime-video"></span>
+								<i class="fa fa-video-camera"></i>
 								<input name="source" type="radio" value="video" />
 							</label>
 							<div class="form-control" style="height:auto;padding:0;">
@@ -261,13 +260,13 @@
 							</div>
 							<span class="input-group-addon btn-group-vertical">
 								<a data-video="play" href="#play" id="playBtn" class="btn btn-default">
-									<span class="glyphicon glyphicon-play"></span>
+									<i class="fa fa-play"></i>
 								</a>
 								<a data-video="pause" href="#pause" id="pauseBtn" class="btn btn-default">
-									<span class="glyphicon glyphicon-pause"></span>
+									<i class="fa fa-pause"></i>
 								</a>
 								<a data-video="stop" href="#stop" id="stopBtn" class="btn btn-default">
-									<span class="glyphicon glyphicon-stop"></span>
+									<i class="fa fa-stop"></i>
 								</a>
 							</span>
 						</div>
@@ -275,7 +274,7 @@
 						
 						<div class="input-group">
 							<label class="input-group-addon" title="URL">
-								<span class="glyphicon glyphicon-link"></span>
+								<i class="fa fa-link"></i>
 								<input name="source" type="radio" value="input[type='url']" />
 							</label>
 							<input type="url" class="form-control">
@@ -290,14 +289,14 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="panel-title">
-							<span class="glyphicon glyphicon-cog"></span>
+							<i class="fa fa-cog"></i>
 							Convert
 							<input name="convert" type="checkbox" checked="checked" value="true" />
 						</div>
 					</div>
 					<div class="panel-body">
 						<div class="form-group">
-							<div class="col-sm-offset-2 col-sm-10">
+							<div class="col-sm-offset-4 col-sm-8">
 								<div class="checkbox">
 									<label class="control-label">scale
 										<input name="scale" type="checkbox" checked="checked" value="true" />
@@ -307,33 +306,43 @@
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-2 control-label">width</label>
-							<div class="col-sm-10">
+							<label class="col-sm-4 control-label">
+								width
+							</label>
+							<div class="col-sm-8">
 								<input name="width" type="range" min="10" max="300" step="10" value="100" class="form-control" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label">height</label>
-							<div class="col-sm-10">
+							<label class="col-sm-4 control-label">
+								height
+							</label>
+							<div class="col-sm-8">
 								<input name="height" type="range" min="10" max="300" step="10" value="100" class="form-control" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label">maxWidth</label>
-							<div class="col-sm-10">
+							<label class="col-sm-4 control-label">
+								maxWidth
+							</label>
+							<div class="col-sm-8">
 								<input name="maxWidth" type="range" min="10" max="500" step="10" value="5	00" class="form-control" />
 							</div>
 						</div>
 						<div class="form-group">
-							<label class="col-sm-2 control-label">maxHeight</label>
-							<div class="col-sm-10">
+							<label class="col-sm-4 control-label">
+								maxHeight
+							</label>
+							<div class="col-sm-8">
 								<input name="maxHeight" type="range" min="10" max="500" step="10" value="500" class="form-control" />
 							</div>
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-2 control-label">type</label>
-							<div class="col-sm-10">
+							<label class="col-sm-4 control-label">
+								type
+							</label>
+							<div class="col-sm-8">
 								<select name="type" class="form-control">
 									<option value="image/png">image/png</option>
 									<option value="image/jpeg">image/jpeg</option>
@@ -342,8 +351,10 @@
 						</div>
 						
 						<div class="form-group">
-							<label class="col-sm-2 control-label">(jpeg) quality</label>
-							<div class="col-sm-10">
+							<label class="col-sm-4 control-label">
+								(jpeg) quality
+							</label>
+							<div class="col-sm-8">
 								<input name="quality" type="range" min="0" max="1" step="0.01" value="1" class="form-control" />
 							</div>
 						</div>
@@ -357,13 +368,13 @@
 				<ul class="nav nav-tabs">
 					<li class="active">
 						<a href="#tab_draw" data-toggle="tab">
-							<span class="glyphicon glyphicon-picture"></span>
+							<i class="fa fa-picture-o"></i>
 							$.draw
 						</a>
 					</li>
 					<li>
 						<a href="#tab0_url" data-toggle="tab">
-							<span class="glyphicon glyphicon-link"></span>
+							<i class="fa fa-link"></i>
 							url
 						</a>
 					</li>
@@ -384,7 +395,7 @@
 									<td><b>url</b></td>
 									<td><textarea data-bind="url" class="form-control" rows="12"></textarea></td>
 								</tr>
-							</body>
+							</tbody>
 						</table>
 					</div>
 				</div>
