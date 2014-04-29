@@ -9,6 +9,7 @@
 	<script src="./jquery.stream.js"></script>
 	<script src="./jquery.media.js"></script>
 	<script src="./jquery.draw.js"></script>
+	<script src="./jquery.notification.js"></script>
 	
 	
 	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
@@ -167,7 +168,7 @@
 					'<div class="alert alert-info fade in clearfix">',
 						'<button aria-hidden="true" data-dismiss="alert" class="close" type="button">×</button>',
 							'<div class="media invisible" style="position:absolute">',
-								'<a class="thumbnail pull-left">',
+								'<a class="thumbnail pull-left" style="max-width:100%">',
 									'<img class="media-object" />',
 								'</a>',
 								'<div class="media-body"></div>',
@@ -175,7 +176,7 @@
 							'<i class="fa fa-spinner fa-spin fa-3x"></i>',
 						'</div>'
 					].join(""))
-					.prependTo("#output")
+					.prependTo("#tab_draw .output")
 					.alert(),
 				$img = $div.find("img");
 			
@@ -289,9 +290,11 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">
 						<div class="panel-title">
-							<i class="fa fa-cog"></i>
-							Convert
-							<input name="convert" type="checkbox" checked="checked" value="true" />
+							<label style="font-size:inherit; font-weight:inherit;">
+								<i class="fa fa-cog"></i>
+								Convert
+								<input name="convert" type="checkbox" checked="checked" value="true" />
+							</label>
 						</div>
 					</div>
 					<div class="panel-body">
@@ -383,9 +386,7 @@
 					<div id="tab_draw" class="tab-pane active">
 						<button class="btn btn-primary">draw</button>
 						<hr />
-						<div id="output">
-						
-						</div>
+						<div class="output"></div>
 					</div>
 					
 					<div id="tab0_url" class="tab-pane">
