@@ -24,7 +24,7 @@
 		 * Note:
 		 *     There is no support for File|Blob objects!
 		 *
-		 * @method: $.fn.media
+		 * @method $.fn.media
 		 * @param media {URL || Array || Object} Media source: single src, multiple src
 		 * @param options {Object} Options: autoplay, muted
 		 * @param qType {Scalar} jQuery queue type

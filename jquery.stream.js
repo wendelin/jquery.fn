@@ -21,7 +21,10 @@
 	 */
 	$.stream = (function(){
 		/**
-		 * TODO: clean up code, use $.proxy
+		 * THis is junk, ignore it
+		 * 
+		 * @junk
+		 * @TODO clean up code, use $.proxy
 		 */
 		var nav = navigator,
 			getUserMedia = (
@@ -62,8 +65,9 @@
 	}());
 	
 	
-	/** WIP
-	 *
+	/**
+	 * @WIP
+	 * 
 	 * options:
 	 * - duration {Integer} Duration of recording session (milliseconds)
 	 * - buffer {Integer} Buffer duration (milliseconds)
@@ -179,7 +183,7 @@ $.when(window._stream || $.stream({video:true,audio:true}))
 	
 	
 	
-	/** DEPRECATED!
+	/* DEPRECATED!
 	 * Get user media, i.e. get user's webcam &/| microphone
 	 * Options:
 	 * - video: get webcam
@@ -252,7 +256,7 @@ $.getUserMedia({video:true})
 		 *     $("video").stream("pause")
 		 *     $("video").stream("stop")
 		 *
-		 * @method: $.fn.stream
+		 * @method $.fn.stream
 		 * @param stream {MediaStream || Object {video,audio || "video" || "audio"}
 		 * @param options {Object} Options: autoplay, muted
 		 * @param qType {Scalar} jQuery queue type

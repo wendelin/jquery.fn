@@ -3,7 +3,7 @@
 	
 	/**
 	 * Convert number of bytes to human readable format.
-	 *
+	 * 
 	 * @private
 	 * @function _readablizeBytes
 	 * @param bytes {Number}
@@ -59,12 +59,12 @@
 			height = resize.height || item.height || $item.height();
 		
 		} else {
-			/**
+			/*
 			 * For video resizing use actual video dimensions rather then those of the HTMLVideoElement.
 			 */
 			var isVideoResize = $item.is("video") && (resize.width || resize.height);
 			
-			/**
+			/*
 			 * throw error if video element is "empty" (width & height == 0)
 			 */
 			if ($item.is("video") && !$item.prop("videoWidth")&& !$item.prop("videoHeight")) {
@@ -75,7 +75,7 @@
 			width  = (isVideoResize) ? item.videoWidth  : item.width  || $item.width();
 			height = (isVideoResize) ? item.videoHeight : item.height || $item.height();
 			
-			/**
+			/*
 			 * TODO: Permit percent values for width & height
 			if (/^\d+(\.\d+)?%$/.test(resize.width)) {
 				resize.width = Math.round(width * (parseFloat(resize.width) / 100));
@@ -153,7 +153,7 @@
 		);
 	};
 	
-	/** JUNK
+	/* JUNK
 	 * Draw HTMLCanvasElement to HTMLImageElement.
 	 *
 	 * @private
@@ -288,7 +288,6 @@
 	 * - maxWidth {Integer} Max width constraint
 	 * - maxHeight {Integer} Max height constraint
 	 *
-	 * @public
 	 * @method $.draw
 	 * @param source {URL || HTMLElement || jQuery set || File || Blob}
 	 * @param target {HTMLElement || jQuery set} If undefined a new HTMLCanvasElement is used
@@ -352,7 +351,7 @@
 				$.when(source).then(function(canvas){
 					try {
 						var url = _canvas2url(canvas, options);
-					/**
+					/*
 					 * Catch:
 					 * [
 					 *     Exception... "The operation is insecure." 
@@ -399,7 +398,7 @@
 			return def;
 		}
 		
-		/**
+		/*
 		 * Use proxy if target is not a canvas
 		 */
 		if (!$(source).is("canvas")) {
@@ -627,22 +626,30 @@
 		}
 	});
 	
-	/**
+	/*
 	 * Wrapped FileReader methods
 	 * See: https://developer.mozilla.org/en-US/docs/Web/API/FileReader
-	 * 
+	 */
+	
+	/**
 	 * @method $.blob.readAsArrayBuffer
 	 * @param blob {File || Blob}
 	 * @return {$.Deferred}
-	 *
+	 */
+	
+	/**
 	 * @method $.blob.readAsBinaryString
 	 * @param blob {File || Blob}
 	 * @return {$.Deferred}
-	 *
+	 */
+	
+	/**
 	 * @method $.blob.readAsDataURL
 	 * @param blob {File || Blob}
 	 * @return {$.Deferred}
-	 *
+	 */
+	
+	/**
 	 * @method $.blob.readAsText
 	 * @param blob {File || Blob}
 	 * @return {$.Deferred}
@@ -791,7 +798,6 @@
 		 * Convert a dataURL to a Blob object
 		 * See: https://developer.mozilla.org/en-US/docs/Web/API/Blob
 		 *
-		 * @public
 		 * @method $.dataURL.toBlob
 		 * @param url {String} Valid dataURL
 		 * @returns {Blob}
@@ -888,7 +894,7 @@
 		 *
 		 * See: $.draw
 		 *
-		 * @method: $.fn.draw
+		 * @method $.fn.draw
 		 * @param source {HTMLElement || File || Blob} Source element: <video> or <canvas>
 		 * @param options {Object} Options: type, width, height, scale, async, quality
 		 * @param qType {Scalar} jQuery queue type
@@ -938,7 +944,7 @@
 		 *   .blob({convert:true,async:true,type:"image/jpeg",width:100,scale:true})
 		 *   .then(console.info,console.warn);
 		 *
-		 * @method Blob
+		 * @method $.fn.blob
 		 * @param options {Object} Options: multiple, async, type, convert, width, height, scale
 		 * @return {Blob | File |  $.Deferred}
 		 */
@@ -950,7 +956,7 @@
 					arr.push($.blob(this, options));
 				});
 			
-				/**
+				/*
 				 * Flatten.
 				 * Since HTMLInputElements of the type file can have multiple files this is necessary
 				 * to ensure we get a nice array of Blobs (& Files) without any nested arrays of Files.
@@ -990,7 +996,7 @@
 		 *   $('input[type="file"]').blob({multiple:true});
 		 * - Get array of Blob[s]
 		 *
-		 * @method dataURL
+		 * @method $.fn.dataURL
 		 * @param options {Object} Options: multiple, async, type, convert, width, height, scale
 		 * @return {Object} $.Deferred instance
 		 */
@@ -1002,7 +1008,7 @@
 					arr.push($.dataURL(this, options));
 				});
 			
-				/**
+				/*
 				 * Flatten.
 				 * Since HTMLInputElements of the type file can have multiple files this is necessary
 				 * to ensure we get a nice array of Blobs (& Files) without any nested arrays of Files.

@@ -4,7 +4,12 @@
  * Examples:
  * - $.notification("foo");
  * - $.notification("foo", {body:"bar"});
- * - $.notification("Hit me").on("click", function(){$.notification("Ouch");});
+ * - $.notification("Hit me", {}, {
+ *       show: function(){$.notification("Hello");},
+ *       close: function(){$.notification("Bye");},
+ *       click: function(){$.notification("Clicked");},
+ *       error: function(){$.notification("Error");}
+ *   })
  *
  * Options:
  * - dir : The direction of the notification; it can be auto, ltr, or rtl
@@ -41,7 +46,6 @@ $.notification = (function(){
 			return notify(title, options, events);
 		}
 	};
-	
 	
 	$.extend(fn, {
 		useNative: !! Notification,
