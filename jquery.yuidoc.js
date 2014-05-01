@@ -16,11 +16,10 @@ var unindent = function (content) {
 };
 
 /* WIP
-var process = {
-	"private":
-
-};
 */
+var process = {
+	"private": function () {}
+};
 
 
 var yuidoc = {
@@ -113,7 +112,10 @@ var yuidoc = {
 		return comments;
 	},
 	parseFile: function (file) {
-		return $.get(file).then(function(code){
+		return $.ajax({
+					url: file,
+					dataType: "text"
+				}).then(function(code){
 			return yuidoc.parseComments(code, file);
 		});
 	},
@@ -121,7 +123,10 @@ var yuidoc = {
 		var a = [];
 		$.each(arguments, function(i,file){
 			a.push(
-				$.get(file).then(function(code){
+				$.ajax({
+					url: file,
+					dataType: "text"
+				}).then(function(code){
 					return {
 						file: file,
 						results: yuidoc.parseComments(code, file)
@@ -173,7 +178,10 @@ var yuidoc = {
 		var a = [];
 		$.each(arguments, function(i,file){
 			a.push(
-				$.get(file).then(function(code){
+				$.ajax({
+					url: file,
+					dataType: "text"
+				}).then(function(code){
 					return {
 						file: file,
 						results: yuidoc.processComments(yuidoc.parseComments(code, file))

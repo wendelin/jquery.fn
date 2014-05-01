@@ -21,10 +21,7 @@
 	 */
 	$.stream = (function(){
 		/**
-		 * THis is junk, ignore it
-		 * 
-		 * @junk
-		 * @TODO clean up code, use $.proxy
+		 * @todo clean up code, use $.proxy
 		 */
 		var nav = navigator,
 			getUserMedia = (
