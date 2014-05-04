@@ -229,7 +229,7 @@ body {
 	</script>
 	<script id="tmpl-jsdoc-content" type="text/x-handlebars-template">
 		{{#each files}}
-			<div class="panel panel-info">
+			<div class="panel panel-primary">
 				<span id="{{jsdoc-uid file}}" class="anchor"></span>
 				<div class="panel-heading">{{file}}</div>
 				{{#if comments}}
@@ -255,6 +255,18 @@ body {
 								
 								{{#if description}}<div class="well">{{{description}}}</div>{{/if}}
 								
+								{{~#jsdoc-tags-has tags "see"~}}
+									<ul class="list-group">
+									{{#jsdoc-tags-filter tags "see"}}
+										<li class="list-group-item">
+											{{jsdoc-json this}}
+											<a href="{{description}}">{{description}}</a>
+										</li>
+									{{/jsdoc-tags-filter}}
+									</ul>
+								{{~/jsdoc-tags-has}}
+								
+								
 								<table class="table table-striped table-bordered table-condensed">
 									{{#jsdoc-tags-filter tags "readonly,private,public,chainable,method,function"}}
 									{{else}}
@@ -266,7 +278,7 @@ body {
 													{{!--
 														<button class="btn btn-default btn-xs" onclick="console.log({{jsdoc-json type}});">b</button>
 													--}}
-													{{jsdoc-tmpl type.type type}}
+													{{jsdoc-tmpl "tag-param" type.type type}}
 												{{/if}}
 												{{#if description}}<pre>{{description}}</pre>{{/if}}
 											</td>
@@ -285,51 +297,87 @@ body {
 		{{/each}}
 	</script>
 	
-	<script data-jsdoc-tmpl="NameExpression" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="tag-param-NameExpression" type="text/x-handlebars-template">
 		&nbsp;<span class="label label-default">{{name}}</span>
 	</script>
 	
-	<script data-jsdoc-tmpl="UnionType" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="tag-param-UnionType" type="text/x-handlebars-template">
 		{{#each elements}}
-			{{jsdoc-tmpl type}}
+			{{jsdoc-tmpl "tag-param" type}}
 		{{/each}}
 	</script>
 	
-	<script data-jsdoc-tmpl="TypeApplication" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="tag-param-TypeApplication" type="text/x-handlebars-template">
 		&nbsp;<span class="label label-default" data-type="{{type}}">
 			{{expression.name}}
 			{{#each applications}}
-				{{jsdoc-tmpl type}}
+				{{jsdoc-tmpl "tag-param" type}}
 			{{/each}}
 		</span>
 	</script>
 	
-	<script data-jsdoc-tmpl="RecordType" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="tag-param-RecordType" type="text/x-handlebars-template">
 		{{#each fields}}
 			&nbsp;
 			<span class="label label-info" data-type="{{type}}">
 				"{{key}}"
 				{{#if value}}
-					: {{jsdoc-tmpl value.type value}}
+					: {{jsdoc-tmpl "tag-param" value.type value}}
 				{{/if}}
 			</span>
 		{{/each}}
 	</script>
 	
-	<script data-jsdoc-tmpl="OptionalType" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="tag-param-OptionalType" type="text/x-handlebars-template">
 		{{!-- TODO: rework this
 		<span class="label label-success" data-type="{{type}}">
 			Optional
 		</span>
 		--}}
-		{{jsdoc-tmpl expression.type expression}}
+		{{jsdoc-tmpl "tag-param" expression.type expression}}
 	</script>
 	
 	
 	<script src="https://raw.githubusercontent.com/wendelin/doctrine/master/doctrine.js"></script>
 	<script src="jquery.jsdoc.js"></script>
+	<script src="jquery.notification.js"></script>
 	<script>
 	$(function(){
+		
+		$.notification.fallback = function (title, options, events) {
+			var $div = $('<div class="alert alert-info"><button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button></div>');
+			
+			$('<strong></strong>').text(title).appendTo($div);
+			
+			if (options.body) {
+				$('<span></span>').text(options.body).appendTo($div);
+			}
+			
+			if (events && events.show) events.show();
+			
+			$("#main").prepend($div);
+			
+			var close = $div.close = function () {
+				if (events && events.close) events.close();
+				close = $div.close = null;
+				$div.fadeOut(2000, function(){
+					$div.remove();
+				});
+			};
+			
+			$div.on("click","button", function (e) {
+				e.stopPropagation();
+				e.preventDefault();
+				close();
+			});
+		
+			return $div;
+		};
+		
+		
+		
+		
+		
 		Handlebars.registerHelper('jsdoc-json', function(context, options) {
 			if (arguments.length === 1) {
 				context = this;
@@ -339,10 +387,15 @@ body {
 		
 		var tmplMap = {};
 		Handlebars.registerHelper('jsdoc-tmpl', function(tId, context, options) {
-			if (arguments.length === 2) {
-				options = context;
+			var args = $.makeArray(arguments),
+				options = args.pop(),
 				context = this;
+			
+			if (arguments.length > 3) {
+				context = args.pop();
 			}
+			
+			var tId = args.join("-");
 			
 			var tmpl = tmplMap[tId];
 			if (!tmpl) {
@@ -415,6 +468,9 @@ body {
 		
 		
 		var loadFiles = function (files) {
+			var n1 = $.notification("Loading files to generate documentation, please wait", {useNative:false});
+			
+			
 			$.jsdoc.asyncParse.files(
 				files,
 				{
@@ -426,7 +482,12 @@ body {
 				false
 			).then(
 				function(files){
+					n1.close()
+					var n2 = $.notification("Parsing files to generate documentation, please wait", {useNative:false});
+					
 					loadParsedFiles(files);
+					
+					n2.close();
 				}
 			);
 			
