@@ -1,4 +1,4 @@
-/*
+/**
 Heavily adapted from: https://raw.githubusercontent.com/yui/yuidoc/master/lib/docparser.js
 
 Copyright (c) 2011, Yahoo! Inc. All rights reserved.

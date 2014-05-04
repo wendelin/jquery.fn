@@ -4,30 +4,30 @@
 	$.fn.extend({
 
 		/**
-		 * This method is used to control media elements (<video>,<audio>).
-		 * It permits the following:
+		 * <p>This method is used to control media elements (&lt;video&gt;,&lt;audio&gt;).<p>
+		 * 
+		 * <p>Note:<br/>
+		 *     There is no support for File|Blob objects!</p>
 		 *
-		 * Defining single media file:
+		 * @example Defining single media file:
 		 *     $("video).media({src:"movie.mp4",type:'audio/mp4; codecs="mp4a.40.2"'})
 		 * 
-		 * Define multiple (alternative) media files:
+		 * @example Define multiple (alternative) media files:
 		 *     $("video").media([
 		 *         {src:"movie.ogg", type:'video/ogg; codecs="theora, vorbis"'},
 		 *         {src:"movie.mp4", type:'video/mp4; codecs="avc1.4D401E, mp4a.40.2"'}
 		 *     ]);
 		 * 
-		 * Control media:
+		 * @example Control media:
 		 *     $("video").media("play");
 		 *     $("video").media("pause");
 		 *     $("video").media("load");		// No idea whether keeping this makes much sense.
 		 *
-		 * Note:
-		 *     There is no support for File|Blob objects!
 		 *
 		 * @method $.fn.media
-		 * @param media {URL || Array || Object} Media source: single src, multiple src
-		 * @param options {Object} Options: autoplay, muted
-		 * @param qType {Scalar} jQuery queue type
+		 * @param {URL|Array|Object} media Media source: single src, multiple src
+		 * @param {Object} options Options: autoplay, muted
+		 * @param {Scalar=} qType jQuery queue type
 		 * @chainable
 		 */
 		media: function (media, options, qType) {

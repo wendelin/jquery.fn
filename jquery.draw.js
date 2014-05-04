@@ -6,8 +6,8 @@
 	 * 
 	 * @private
 	 * @function _readablizeBytes
-	 * @param bytes {Number}
-	 * @return {String}
+	 * @param {Number} bytes
+	 * @returns {String}
 	 */
 	var _readablizeBytes = function (bytes) {
 		var s = ['bytes', 'kB', 'MB', 'GB', 'TB', 'PB'],
@@ -16,18 +16,18 @@
 	};
 	
 	/**
-	 * Draw an item onto a HTMLCanvasElement or a set of canvases.
-	 * Supports resizing
+	 * Draw an item onto a HTMLCanvasElement or a set of canvases.<br/>
+	 * <strong>Supports resizing</strong>
 	 *
-	 * Note it returns the canvas it gets.
+	 * <p>Note it returns the canvas it gets.<br/>
 	 * If the canvas given to it is a "raw" HTMLElement that that is what it returns. If it receives
-	 * a jQuery set of one HTMLCanvasElement it returns that.
+	 * a jQuery set of one HTMLCanvasElement it returns that.</p>
 	 *
 	 * @private
 	 * @method _elementToCanvas
-	 * @param item {HTMLVideo || HTMLCanvasElement || HTMLImageElement}
-	 * @param canvas {HTMLCanvasElement || jQuery Set of HTMLCanvasElements}
-	 * @param resize {object} Optional resize parameters: width, height, maxWidth, maxHeight, scale
+	 * @param {HTMLVideo|HTMLCanvasElement|HTMLImageElement} item
+	 * @param {HTMLCanvasElement || jQuery Set of HTMLCanvasElements} canvas
+	 * @param {Object} resize Optional resize parameters: width, height, maxWidth, maxHeight, scale
 	 * @returns {HTMLCanvasElement || jQuery set of single HTMLCanvasElement}
 	 */
 	var _elementToCanvas = function (item, canvas, resize) {
@@ -140,8 +140,8 @@
 	 *
 	 * @private
 	 * @method _canvas2url
-	 * @param canvas {HTMLCanvasElement}
-	 * @param options {object} Optional resize parameters: type, quality
+	 * @param {HTMLCanvasElement} canvas
+	 * @param {Object} options Optional resize parameters: type, quality
 	 * @returns {}
 	 */
 	var _canvas2url = function (canvas, options) {
@@ -153,31 +153,15 @@
 		);
 	};
 	
-	/* JUNK
-	 * Draw HTMLCanvasElement to HTMLImageElement.
-	 *
-	 * @private
-	 * @method _canvas2img
-	 * @param canvas {HTMLCanvasElement}
-	 * @param img {HTMLImageElement || jQuery Set of HTMLCanvasElements}
-	 * @param options {object} Optional image parameters: type, quality
-	 * @returns {URL}
-	var _canvas2img = function (canvas, img, options) {
-		if (DEBUG > 2) console.log("_canvas2img", canvas, img, options);
-		$(img).attr("src", _canvas2url(canvas, options));
-		return img;
-	};
-	*/
-	
 	/**
-	 * Asynchronous draw url into a HTMLImageElement.
-	 * Since img width and height cannot be correctly assessed outside of the document
-	 * it is appended to the body.
+	 * <p>Asynchronous draw url into a HTMLImageElement.</p>
+	 * <p>Since img width and height cannot be correctly assessed outside of the document
+	 * it is appended to the body.</p>
 	 *
 	 * @private
 	 * @function async_url2img
-	 * @param url {URL}
-	 * @param img {HTMLImageElement}
+	 * @param {URL} url
+	 * @param {HTMLImageElement} img
 	 * @returns {$.Deferred instance}
 	 */
 	var async_url2img = function (url, img) {
@@ -196,16 +180,16 @@
 	};
 	
 	/**
-	 * Asynchronous draw url into a new HTMLCanvasElement.
-	 * Draw url into a new HTMLImageElement.
-	 * Since img width and height cannot be correctly assessed outside of the document
-	 * it is appended to the body.
+	 * <p>Asynchronous draw url into a new HTMLCanvasElement.</p>
+	 * <p>Draw url into a new HTMLImageElement.</p>
+	 * <p>Since img width and height cannot be correctly assessed outside of the document
+	 * it is appended to the body.</p>
 	 *
 	 * @private
 	 * @function async_url2Canvas
-	 * @param url {URL}
-	 * @param canvas {HTMLCanvasElement || jQuery Set of HTMLCanvasElements}
- 	 * @param resize {object} Optional resize parameters: width, height, maxWidth, maxHeight, scale
+	 * @param {URL} url
+	 * @param {HTMLCanvasElement|jQuery_Set_of_HTMLCanvasElements} canvas
+ 	 * @param {Object} resize Optional resize parameters: width, height, maxWidth, maxHeight, scale
 	 * @returns {$.Deferred instance}
 	 */
 	var async_url2Canvas = function (url, canvas, resize) {
@@ -233,9 +217,9 @@
 	 *
 	 * @private
 	 * @function async_blob2Canvas
-	 * @param blob {Blob || File}
-	 * @param canvas {HTMLCanvasElement || jQuery Set of HTMLCanvasElements}
- 	 * @param resize {object} Optional resize parameters: width, height, maxWidth, maxHeight, scale
+	 * @param {Blob|File} blob
+	 * @param {HTMLCanvasElement|jQuery-set-of-HTMLCanvasElements} canvas
+ 	 * @param {Object} resize Optional resize parameters: width, height, maxWidth, maxHeight, scale
 	 * @returns {$.Deferred instance}
 	 */
 	var async_blob2Canvas = function (blob, canvas, resize) {
@@ -255,43 +239,51 @@
 	
 	
 	/**
-	 * Drawing method takes visual data from a single given source and "draws" it into each element
-	 * of the context jQuery element set.
+	 * <p>Drawing method takes visual data from a single given source and "draws" it into each element
+	 * of the context jQuery element set.<p>
 	 *
-	 * Supported sources are:
-	 * - HTMLVideoElement
-	 * - HTMLCanvasElement
-	 * - HTMLImageElement
-	 * - File, containing imagery data that can be put into a HTMLImageElement
-	 * - Blob, "
-	 * - URL, any valid URL will do: dataURL, Blob URL, normal URL, whatever
+	 * <p>Supported sources are:<p>
+	 * <ul>
+	 *   <li>HTMLVideoElement</li>
+	 *   <li>HTMLCanvasElement</li>
+	 *   <li>HTMLImageElement</li>
+	 *   <li>File, containing imagery data that can be put into a HTMLImageElement</li>
+	 *   <li>Blob, "</li>
+	 *   <li>URL, any valid URL will do: dataURL, Blob URL, normal URL, whatever</li>
+	 * </ul>
 	 *
-	 * NOT supported sources are:
-	 * - CSS selector // The only string inputs permitted are URLs (for now)
+	 * <p>NOT supported sources are:</p>
+	 * <ul>
+	 *   <li>CSS selector // The only string inputs permitted are URLs (for now)</li>
+	 * </ul>
 	 *
-	 * Supported targets
-	 * - HTMLCanvasElement
-	 * - HTMLImageElement
+	 * <p>Supported targets</p>
+	 * <ul>
+	 *   <li>HTMLCanvasElement</li>
+	 *   <li>HTMLImageElement</li>
+	 *  </ul>
 	 *
-	 * Note:
+	 * <p>Note:<br/>
 	 *   If the source is a HTMLVideoElement then a video still image is taken and drawn into 
-	 *   the target or each item in the target set.
+	 *   the target or each item in the target set.</p>
 	 *
-	 * If successful the deferred object is resolved with the target.
+	 * <p>If successful the deferred object is resolved with the target.</p>
 	 *
-	 * options:
-	 * - type {String} MimeType to be used when drawing img[s]
-	 * - width {Integer} Resize width
-	 * - height {Integer} Resize height
-	 * - scale {Boolean} Resize scaling/keep aspect ratio when resizing
-	 * - async {Boolean} Async mode (enables File and Blob sources) method will return $.Deferred for chaining
-	 * - maxWidth {Integer} Max width constraint
-	 * - maxHeight {Integer} Max height constraint
+	 * <p>Options:</p>
+	 * <dl>
+	 *   <dt>type {String}</dt>       <dd>MimeType to be used when drawing img[s]</dd>
+	 *   <dt>width {Integer}</dt>     <dd>Resize width</dd>
+	 *   <dt>height {Integer}</dt>    <dd>Resize height</dd>
+	 *   <dt>scale {Boolean}</dt>     <dd>Resize scaling/keep aspect ratio when resizing</dd>
+	 *   <dt>async {Boolean}</dt>     <dd>Async mode (enables File and Blob sources) method will return $.Deferred for chaining</dd>
+	 *   <dt>maxWidth {Integer}</dt>  <dd>Max width constraint</dd>
+	 *   <dt>maxHeight {Integer}</dt> <dd>Max height constraint</dd>
+	 * </dl>
 	 *
 	 * @method $.draw
-	 * @param source {URL || HTMLElement || jQuery set || File || Blob}
-	 * @param target {HTMLElement || jQuery set} If undefined a new HTMLCanvasElement is used
-	 * @param options {Object} Options: type, width, height, scale, async
+	 * @param {URL|HTMLElement|jQuery-set|File|Blob} source
+	 * @param {HTMLElement|jQuery-set} target If undefined a new HTMLCanvasElement is used
+	 * @param {Object.<{type:Scalar,width:Integer,height:Integer,scale:Boolean,async:Boolean,maxWidth:Integer,maxHeight:Integer}>} options Options: type, width, height, scale, async
 	 * @returns {Object} target or if async=true $.Deferred instance that when successful returns the target
 	 */
 	$.draw = function (source, target, options) {
@@ -418,20 +410,22 @@
 	};
 	
 	/**
-	 * Get a Blob
+	 * <p>Get a Blob<p>
 	 *
-	 * Options:
-	 * - multiple {Boolean} override, force support for multiple files from single source => see: <input type="file" multiple />
-	 * - async {Boolean} Wrap response in a $.Deferred
-	 * - type {String} Image mimetype to default to or if (convert) to enforce
-	 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
-	 * - width {Integer} Resize image width
-	 * - height {Integer} Resize image height
+	 * <p>Options:<p>
+	 * <dl>
+	 *   <dt>multiple {Boolean}</dt> <dd>override, force support for multiple files from single source => see: &lt;input type="file" multiple /&gt;</dd>
+	 *   <dt>async {Boolean}</dt>    <dd>Wrap response in a $.Deferred</dd>
+	 *   <dt>type {String}</dt>      <dd>Image mimetype to default to or if (convert) to enforce</dd>
+	 *   <dt>convert {Boolean}</dt>  <dd>Conversion to be forced: image mimeType and width && height</dd>
+	 *   <dt>width {Integer}</dt>    <dd>Resize image width</dd>
+	 *   <dt>height {Integer}</dt>   <dd>Resize image height</dd>
+	 * </dl>
 	 *
 	 * @method $.blob
-	 * @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
-	 * @param options {Object} Options: multiple, convert, async, width, height, type
-	 * @return {Blob || File || $.Deferred()}
+	 * @param {File|Blob|HTMLVideoElement|HTMLCanvasElement|HTMLImageElement} source
+	 * @param {Object} options Options: multiple, convert, async, width, height, type
+	 * @returns {Blob|File|$.Deferred()}
 	 */
 	$.blob = function (source, options) {
 		if (DEBUG) console.info("$.blob", source, options);
@@ -485,8 +479,8 @@
 		 * performance (less memory & time).
 		 *
 		 * @method $.blob.createURL
-		 * @param blob {File || Blob}
-		 * @return {String}
+		 * @param {File|Blob} blob
+		 * @returns {String}
 		 */
 		createURL: function (blob) {
 			return (window.URL || window.webkitURL).createObjectURL(blob);
@@ -500,8 +494,8 @@
 		 * Counterpart to: $.blob.createURL
 		 *
 		 * @method $.blob.revokeURL
-		 * @param blob {File || Blob}
-		 * @return {String}
+		 * @param {File|Blob} blob
+		 * @returns {String}
 		 */
 		revokeURL: function (url) {
 			return (window.URL || window.webkitURL).revokeObjectURL(url);
@@ -514,9 +508,9 @@
 		 * a human readable format.
 		 *
 		 * @method $.blob.size
-		 * @param blob {File || Blob}
-		 * @param humanReadable {Boolean}
-		 * @return {String}
+		 * @param {File|Blob} blob
+		 * @param {Boolean} humanReadable
+		 * @returns {String}
 		 */
 		size: function (blob, humanReadable) {
 			return (humanReadable ? _readablizeBytes(blob.size) : blob.size);
@@ -529,9 +523,9 @@
 		 *  See: async_blob2Canvas
 		 *
 		 * @method $.blob.convert
-		 * @param blob {File || Blob}
-		 * @param options {Object} Options: async, width, height, scale, type
-		 * @return {File || Blob || $.Deferred}
+		 * @param {File|Blob} blob
+		 * @param {Object} options Options: async, width, height, scale, type
+		 * @returns {File|Blob|$.Deferred}
 		 */
 		convert: function (blob, options) {
 			if (DEBUG > 1) console.log("$.blob.convert", blob, options);
@@ -572,18 +566,16 @@
 		
 		/**
 		 * Force the browser to try to save a given blob.
-		 *
-		 * Example:
-		 *   $.blob.save(new Blob(["Hello World!"]), "hello.txt");
-		 *
-		 * See:
-		 *   http://stackoverflow.com/questions/18925210/download-blob-content-using-specified-charset
-		 *   http://msdn.microsoft.com/en-us/library/ie/hh779016%28v=vs.85%29.aspx
-		 *   http://hackworthy.blogspot.com/2012/05/savedownload-data-generated-in.html
-		 *
+		 * 
+		 * @example $.blob.save(new Blob(["Hello World!"]), "hello.txt");
+		 * 
+		 * @see http://stackoverflow.com/questions/18925210/download-blob-content-using-specified-charset
+		 * @see http://msdn.microsoft.com/en-us/library/ie/hh779016%28v=vs.85%29.aspx
+		 * @see http://hackworthy.blogspot.com/2012/05/savedownload-data-generated-in.html
+		 * 
 		 * @method $.blob.save
-		 * @param {File || Blob}
-		 * @param name {String}
+		 * @param {File|Blob} blob
+		 * @param {String} name
 		 */
 		save: (function(){
 			var fn = (navigator.msSaveBlob && $.proxy(navigator.msSaveBlob, navigator) || function (blob, name) {
@@ -603,14 +595,13 @@
 		 * Type test, supports general type testing ("image","audio","video",...) and
 		 * specific type testing ("application/zip", "image/png", "image/jpeg",...).
 		 *
-		 * Usage:
-		 * - $.blob.is(blob);
-		 * - $.blob.is(blob, "image");
-		 * - $.blob.is(blob, "image/png");
+		 * @example $.blob.is(blob);
+		 * @example $.blob.is(blob, "image");
+		 * @example $.blob.is(blob, "image/png");
 		 *
 		 * @method $.blob.is
-		 * @param blob {Blob || File} Valid blob or file
-		 * @param str {String} Test string
+		 * @param {Blob|File} blob Valid blob or file
+		 * @param {String} str Test string
 		 * @returns {Boolean}
 		 */
 		is: function (blob, str) {
@@ -628,31 +619,35 @@
 	
 	/*
 	 * Wrapped FileReader methods
-	 * See: https://developer.mozilla.org/en-US/docs/Web/API/FileReader
+	 * @see https://developer.mozilla.org/en-US/docs/Web/API/FileReader
 	 */
 	
 	/**
 	 * @method $.blob.readAsArrayBuffer
-	 * @param blob {File || Blob}
-	 * @return {$.Deferred}
+	 * @param {File|Blob} blob
+	 * @param {Object} options
+	 * @returns {$.Deferred}
 	 */
 	
 	/**
 	 * @method $.blob.readAsBinaryString
-	 * @param blob {File || Blob}
-	 * @return {$.Deferred}
+	 * @param {File|Blob} blob
+	 * @param {Object} options
+	 * @returns {$.Deferred}
 	 */
 	
 	/**
 	 * @method $.blob.readAsDataURL
-	 * @param blob {File || Blob}
-	 * @return {$.Deferred}
+	 * @param {File|Blob} blob
+	 * @param {Object} options
+	 * @returns {$.Deferred}
 	 */
 	
 	/**
 	 * @method $.blob.readAsText
-	 * @param blob {File || Blob}
-	 * @return {$.Deferred}
+	 * @param {File|Blob} blob
+	 * @param {Object} options
+	 * @returns {$.Deferred}
 	 */
 	$.each(["readAsArrayBuffer","readAsBinaryString","readAsDataURL","readAsText"], function(i, method){
 		$.blob[method] = function(blob, options){
@@ -676,20 +671,22 @@
 	});
 	
 	/**
-	 * Get dataURL[s]
-	 *
-	 * Options:
-	 * - multiple {Boolean} override, force support for multiple files from single source => see: <input type="file" multiple />
-	 * - async {Boolean} Wrap response in a $.Deferred
-	 * - type {String} Image mimetype to default to or if (convert) to enforce
-	 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
-	 * - width {Integer} Resize image width
-	 * - height {Integer} Resize image height
+	 * <p>Get dataURL[s]</p>
+	 * 
+	 * <p>Options:</p>
+	 * <dl>
+	 *   <dt>multiple {Boolean}</dt> <dd>override, force support for multiple files from single source => see: &lt;input type="file" multiple /&gt;</dd>
+	 *   <dt>async {Boolean}</dt>    <dd>Wrap response in a $.Deferred</dd>
+	 *   <dt>type {String}</dt>      <dd>Image mimetype to default to or if (convert) to enforce</dd>
+	 *   <dt>convert {Boolean}</dt>  <dd>Conversion to be forced: image mimeType and width && height</dd>
+	 *   <dt>width {Integer}</dt>    <dd>Resize image width</dd>
+	 *   <dt>height {Integer}</dt>   <dd>Resize image height</dd>
+	 * </dl>
 	 *
 	 * @method $.dataURL
-	 * @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
-	 * @param options {Object} Options: multiple, convert, async, width, height, type
-	 * @return {URL || $.Deferred()}
+	 * @param {File|Blob|HTMLVideoElement|HTMLCanvasElement|HTMLImageElement} source
+	 * @param {Object} options Options: multiple, convert, async, width, height, type
+	 * @returns {URL || $.Deferred()}
 	 */
 	$.dataURL = function (source, options) {
 		if (DEBUG) console.info("$.dataURL", source, options);
@@ -760,8 +757,8 @@
 		 * Attempt to get the mimeType of a given dataURL.
 		 *
 		 * @method $.dataURL.type
-		 * @param url {String}
-		 * @return {String}
+		 * @param {String} url
+		 * @returns {String}
 		 */
 		type: function (url) {
 			return url.split(',')[0].split(':')[1].split(';')[0];
@@ -771,9 +768,9 @@
 		 * Raw dataURL size (same as the length)
 		 *
 		 * @method $.dataURL.rawSize
-		 * @param url {String}
-		 * @param humanReadable {Boolean}
-		 * @return {String}
+		 * @param {String} url
+		 * @param {Boolean} humanReadable
+		 * @returns {String}
 		 */
 		rawSize: function (url, humanReadable) {
 			var bytes = url.length;
@@ -781,13 +778,13 @@
 		},
 		
 		/**
-		 * Size of the dataURL's file.
+		 * Size of the dataURL's file.<br/>
 		 * (It removes the type info and accounts for the bloat.)
 		 *
 		 * @method $.dataURL.size
-		 * @param url {String}
-		 * @param humanReadable {Boolean}
-		 * @return {String}
+		 * @param {String} url
+		 * @param {Boolean} humanReadable
+		 * @returns {String}
 		 */
 		size: function (url, humanReadable) {
 			var bytes = Math.round(url.split(',')[1].length*3/4);
@@ -795,11 +792,11 @@
 		},
 		
 		/**
-		 * Convert a dataURL to a Blob object
+		 * Convert a dataURL to a Blob object<br/>
 		 * See: https://developer.mozilla.org/en-US/docs/Web/API/Blob
 		 *
 		 * @method $.dataURL.toBlob
-		 * @param url {String} Valid dataURL
+		 * @param {String} url Valid dataURL
 		 * @returns {Blob}
 		 */
 		toBlob: function (url) {
@@ -810,12 +807,12 @@
 		},
 		
 		/**
-		 * Force the browser to try to save a given dataURL.
+		 * Force the browser to try to save a given dataURL.<br/>
 		 * Support for normal URLs is also added.
 		 *
 		 * @method $.dataURL.save
-		 * @param url {String} Valid dataURL || URL
-		 * @param name {String}
+		 * @param {String} url Valid dataURL || URL
+		 * @param {String} name
 		 */
 		save: function (url, name) {
 			var a = document.createElement("a");
@@ -831,14 +828,13 @@
 		 * Type test, supports general type testing ("image","audio","video",...) and
 		 * specific type testing ("application/zip", "image/png", "image/jpeg",...).
 		 *
-		 * Usage:
-		 * - $.dataURL.is(url);
-		 * - $.dataURL.is(url, "image");
-		 * - $.dataURL.is(url, "image/png");
+		 * @example $.dataURL.is(url);
+		 * @example $.dataURL.is(url, "image");
+		 * @example $.dataURL.is(url, "image/png");
 		 *
 		 * @method $.dataURL.is
-		 * @param url {String} Valid dataURL
-		 * @param str {String} Test string
+		 * @param {String} url Valid dataURL
+		 * @param {String} str Test string
 		 * @returns {Boolean}
 		 */
 		is: function (url, str) {
@@ -854,19 +850,21 @@
 	
 	
 	/**
-	 * Save file
+	 * <p>Save file</p>
 	 *
-	 * Options:
-	 * - async {Boolean} Wrap response in a $.Deferred
-	 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
-	 * - type {String} Image mimetype to default to or if (convert) to enforce
-	 * - width {Integer} Resize image width
-	 * - height {Integer} Resize image height
-	 * - name {String} File name to be used
+	 * <p>Options:</p>
+	 * <dl>
+	 *   <dt>async {Boolean}</dt>   <dd>Wrap response in a $.Deferred</dd>
+	 *   <dt>convert {Boolean}</dt> <dd>Conversion to be forced: image mimeType and width && height</dd>
+	 *   <dt>type {String}</dt>     <dd>Image mimetype to default to or if (convert) to enforce</dd>
+	 *   <dt>width {Integer}</dt>   <dd>Resize image width</dd>
+	 *   <dt>height {Integer}</dt>  <dd>Resize image height</dd>
+	 *   <dt>name {String}</dt>     <dd>File name to be used</dd>
+	 * </dl>
 	 *
 	 * @method $.save
-	 * @param source {File || Blob || HTMLVideoElement || HTMLCanvasElement || HTMLImageElement}
-	 * @param options {Object} Options: convert, async, width, height, type, name
+	 * @param {File|Blob|HTMLVideoElement|HTMLCanvasElement|HTMLImageElement} source
+	 * @param {Object} options Options: convert, async, width, height, type, name
 	 */
 	$.save = function (source, options) {
 		options = $.extend(options||{}, {async:true});
@@ -889,15 +887,14 @@
 	
 	$.fn.extend({
 		/**
-		 * This method wraps around the $.draw method and when executing it puts it into a queue
-		 * queue.
+		 * This method wraps around the $.draw method and when executing it puts it into a queue.
 		 *
-		 * See: $.draw
+		 * @see $.draw
 		 *
 		 * @method $.fn.draw
-		 * @param source {HTMLElement || File || Blob} Source element: <video> or <canvas>
-		 * @param options {Object} Options: type, width, height, scale, async, quality
-		 * @param qType {Scalar} jQuery queue type
+		 * @param {HTMLVideoElement|HTMLCanvasElement|HTMLImageElement|File|Blob} source
+		 * @param {Object} options Options: type, width, height, scale, async, quality
+		 * @param {Scalar} qType jQuery queue type
 		 * @chainable
 		 */
 		draw: function (source, options, qType) {
@@ -917,36 +914,32 @@
 		},
 		
 		/**
-		 * Get a single Blob or array of Blob[s].
+		 * <p>Get a single Blob or array of Blob[s].</p>
+		 * 
+		 * <p>Options:
+		 *   <dt>multiple {Boolean}</dt> <dd>Return array of Blob[s]</dd>
+		 *   <dt>async {Boolean}</dt>    <dd>Async mode (enables File and Blob sources) method will return $.Deferred for chaining</dd>
+		 *   <dt>type {String}</dt>      <dd>MimeType to be used when drawing img[s]</dd>
+		 *   <dt>convert {Boolean}</dt>  <dd>Conversion to be forced: image type and width && height</dd>
+		 *   <dt>width {Integer}</dt>    <dd>Resize width</dd>
+		 *   <dt>height {Integer}</dt>   <dd>Resize height</dd>
+		 *   <dt>scale {Boolean}</dt>    <dd>Resize scaling/keep aspect ratio when resizing</dd>
+		 *   <dt>quality {Integer}</dt>  <dd>Image quality</dd>
+		 * </dl>
 		 *
-		 * Options:
-		 * - multiple {Boolean} Return array of Blob[s]
-		 * - async {Boolean} Async mode (enables File and Blob sources) method will return $.Deferred for chaining
-		 * - type {String} MimeType to be used when drawing img[s]
-		 * - convert {Boolean} Conversion to be forced: image type and width && height
-		 * - width {Integer} Resize width
-		 * - height {Integer} Resize height
-		 * - scale {Boolean} Resize scaling/keep aspect ratio when resizing
-		 * - quality {Integer} Image quality
-		 *
-		 * Usage:
-		 * - Get array of File[s] for all upload fields:
-		 *   $('input[type="file"]').blob({multiple:true});
-		 *
-		 * - Get array of Blob[s] forcibly converted from all upload fields (only works with images)
+		 * @example $('input[type="file"]').blob({multiple:true});
+		 *   Get array of File[s] for all upload fields:
+		 * @example Get array of Blob[s] forcibly converted from all upload fields (only works with images)
 		 *   $("input[type="file"][multiple]")
 		 *    .blob({convert:true, async:true, multiple:true, width:40, scale:true})
 		 *    .then(console.info,console.warn);
-		 *
-		 * Examples:
-		 * - $("img").blob({multiple:true});
-		 * - $('input[type="file"]')
+		 * @example $("img").blob({multiple:true});
+		 * @example $('input[type="file"]')
 		 *   .blob({convert:true,async:true,type:"image/jpeg",width:100,scale:true})
 		 *   .then(console.info,console.warn);
-		 *
 		 * @method $.fn.blob
-		 * @param options {Object} Options: multiple, async, type, convert, width, height, scale
-		 * @return {Blob | File |  $.Deferred}
+		 * @param {Object} options Options: multiple, async, type, convert, width, height, scale
+		 * @returns {Blob|File|$.Deferred}
 		 */
 		blob: function (options) {
 			if (DEBUG) console.info("$.fn.blob", this, options);
@@ -980,25 +973,24 @@
 		},
 		
 		/**
-		 * Get a single dataURL or array of dataURL[s].
+		 * <p>Get a single dataURL or array of dataURL[s].</p>
 		 *
-		 * Options:
-		 * - multiple {Boolean} Return array of Blob[s]
-		 * - async {Boolean} Async mode (enables File and Blob sources) method will return $.Deferred for chaining
-		 * - type {String} MimeType to be used when drawing img[s]
-		 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
-		 * - width {Integer} Resize width
-		 * - height {Integer} Resize height
-		 * - scale {Boolean} Resize scaling/keep aspect ratio when resizing
+		 * <p>Options:</p>
+		 * <dl>
+		 *   <dt>multiple {Boolean}</dt> <dd>Return array of Blob[s]</dd>
+		 *   <dt>async {Boolean}</dt>    <dd>Async mode (enables File and Blob sources) method will return $.Deferred for chaining</dd>
+		 *   <dt>type {String}</dt>      <dd>MimeType to be used when drawing img[s]</dd>
+		 *   <dt>convert {Boolean}</dt>  <dd>Conversion to be forced: image mimeType and width && height</dd>
+		 *   <dt>width {Integer}</dt>    <dd>Resize width</dd>
+		 *   <dt>height {Integer}</dt>   <dd>Resize height</dd>
+		 *   <dt>scale {Boolean}</dt>    <dd>Resize scaling/keep aspect ratio when resizing</dd>
+		 * </dl>
 		 *
-		 * Usage:
-		 * - Get array of File[s] for all upload fields:
-		 *   $('input[type="file"]').blob({multiple:true});
-		 * - Get array of Blob[s]
+		 * @example $('input[type="file"]').dataURL({multiple:true});
 		 *
 		 * @method $.fn.dataURL
-		 * @param options {Object} Options: multiple, async, type, convert, width, height, scale
-		 * @return {Object} $.Deferred instance
+		 * @param {Object} options Options: multiple, async, type, convert, width, height, scale
+		 * @returns {Object} $.Deferred instance
 		 */
 		dataURL: function (options) {
 			if (DEBUG) console.info("dataURL", this, options);
@@ -1032,26 +1024,26 @@
 		},
 		
 		/**
-		 * Get a single Blob or array of Blob[s].
+		 * <p>Get a single Blob or array of Blob[s].<p>
+		 * 
+		 * <p>Options:</p>
+		 * <dl>
+		 *   <dt>multiple {Boolean}</dt> <dd>Return array of Blob[s]</dd>
+		 *   <dt>async {Boolean}</dt>    <dd>Async mode (enables File and Blob sources) method will return $.Deferred for chaining</dd>
+		 *   <dt>type {String}</dt>      <dd>MimeType to be used when drawing img[s]</dd>
+		 *   <dt>convert {Boolean}</dt>  <dd>Conversion to be forced: image mimeType and width && height</dd>
+		 *   <dt>width {Integer}</dt>    <dd>Resize width</dd>
+		 *   <dt>height {Integer}</dt>   <dd>Resize height</dd>
+		 *   <dt>scale {Boolean}</dt>    <dd>Resize scaling/keep aspect ratio when resizing</dd>
+		 * </dl>
 		 *
-		 * Options:
-		 * - multiple {Boolean} Return array of Blob[s]
-		 * - async {Boolean} Async mode (enables File and Blob sources) method will return $.Deferred for chaining
-		 * - type {String} MimeType to be used when drawing img[s]
-		 * - convert {Boolean} Conversion to be forced: image mimeType and width && height
-		 * - width {Integer} Resize width
-		 * - height {Integer} Resize height
-		 * - scale {Boolean} Resize scaling/keep aspect ratio when resizing
-		 *
-		 * Usage:
-		 * - Get array of File[s] for all upload fields:
+		 * @example Get array of File[s] for all upload fields:
 		 *   $('input[type="file"]').blob({multiple:true});
-		 * - Get array of Blob[s]
 		 *
 		 * @method $.fn.save
-		 * @param options {Object} Options: multiple, async, type, convert, width, height, scale
-		 * @param qType {Scalar} jQuery queue type
-		 * @return {Object} $.Deferred instance
+		 * @param {Object} options Options: multiple, async, type, convert, width, height, scale
+		 * @param {Scalar} qType jQuery queue type
+		 * @returns {Object} $.Deferred instance
 		 */
 		save: function (options, qType) {
 			if (DEBUG) console.info("$.fn.save", this, options, qType);

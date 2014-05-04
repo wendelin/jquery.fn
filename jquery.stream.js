@@ -3,20 +3,22 @@
 	
 	
 	/**
-	 * Get a media stream.
-	 * Currently only user media streams are supported
+	 * <p>Get a media stream.</p>
+	 * <p>Currently only user media streams are supported</p>
 	 *
-	 * If successful the deferred object is resolved with the MediaStream.
+	 * <p>If successful the deferred object is resolved with the MediaStream.</p>
 	 *
-	 * options:
-	 * - "video" Shorthand for {video:true}
-	 * - "audio" Shorthand for {audio:true}
-	 * - video {Boolean} Local video stream (aka Webcam)
-	 * - audio {Boolean} Local audio stream (aka Microphone)
+	 * <p>Options:</p>
+	 * <dl>
+	 *   <dt>"video"</dt>         <dd>Shorthand for {video:true}</dd>
+	 *   <dt>"audio"</dt>         <dd>Shorthand for {audio:true}</dd>
+	 *   <dt>video {Boolean}</dt> <dd>Local video stream (aka Webcam)</dd>
+	 *   <dt>audio {Boolean}</dt> <dd>Local audio stream (aka Microphone)</dd>
+	 * </dl>
 	 *
 	 * @public
 	 * @method $.stream
-	 * @param options {Object} Options: video, audio
+	 * @param {Object} options Options: video, audio
 	 * @returns {Object} $.Deferred instance that when successful reuturns the MediaStream
 	 */
 	$.stream = (function(){
@@ -63,19 +65,45 @@
 	
 	
 	/**
-	 * @WIP
-	 * 
-	 * options:
-	 * - duration {Integer} Duration of recording session (milliseconds)
-	 * - buffer {Integer} Buffer duration (milliseconds)
+	 * <p>Record a MediaStream.</p>
+	 *
+	 * <p><Options:</p>
+	 * <dl>
+	 *   <dt>duration {Integer}</dt> <dd>Duration of recording session (milliseconds)</dd>
+	 *   <dt>buffer {Integer}</dt>   <dd>Buffer duration (milliseconds)</dd>
+	 * </dl>
+	 *
+	 * @todo Debug this in multiple different browsers.
+	 *
+	 * @example // Record 5 seconds of video and audio using FireFox
+	 *    $("video")
+	 *    .stream({video:true,audio:true},{autoplay:true})
+	 *    .queue(function(){
+	 *        var stream = this.mozSrcObject
+	 *        console.log(stream);
+	 *        $.stream.record(stream,5000)
+	 *        .then(function(blob){
+	 *            $.blob.save(blob);
+	 *            stream.stop();
+	 *        }, console.warn);
+	 *    });
+	 *
+	 * @example // Record 5 seconds of video and audio.
+	 * $.stream({video:true,audio:true})
+	 * .then(function(stream){
+	 *     $.stream.record(stream,5000)
+	 *     .then(function(blob){
+	 *         $.blob.save(blob);
+	 *         stream.stop();
+	 *     }, console.warn);
+	 * }, console.warn);
 	 *
 	 * @public
 	 * @method $.stream.record
-	 * @param stream {MediaStream}
-	 * @param options {Object}
+	 * @param {MediaStream} stream
+	 * @param {Object} options
 	 * @returns {Object} $.Deferred instance
 	 */
-	// WIP
 	$.stream.record = function (stream, duration) {
 		var recorder = new MediaRecorder(stream),
 			def = new $.Deferred();
@@ -93,48 +121,16 @@
 		recorder.start();
 		return def;
 	};
-	/*
-console.clear();
-$("video")
-.stream({video:true,audio:true},{autoplay:true})
-.queue(function(){
-    var stream = this.mozSrcObject
-    console.log(stream);
-    $.stream.record(stream,5000)
-    .then(function(blob){
-        $.blob.save(blob);
-        stream.stop();
-    }, console.warn);
-});
-*/
-	
-	
-	/* This Works
-console.clear();
-$.when(window._stream || $.stream({video:true,audio:true}))
-.then(function(stream){
-    window._stream = stream;
-    console.log(stream);
-    var recorder = new MediaRecorder(stream);
-    recorder.ondataavailable = function(e){
-        var blob = e.data;
-        console.log(blob);
-        $.blob.save(blob);
-        console.log(recorder);
-    };
-    recorder.onstop = function(e){
-        recorder.ondataavailable = null;
-    };
-    console.log(recorder);
-    recorder.start(/ *buffersize* /);
-    setTimeout(function(){
-        recorder.stop();
-    },5000);
-});"";
-	*/
 	
 	
 	$.extend($.stream, {
+		/**
+		 * Attach MediaStream
+		 *
+		 * @method $.stream.attach
+		 * @param {HTMLVideoElement|HTMLAudioElement|jQuery.<(HTMLVideoElement|HTMLAudioElement)>} target
+		 * @param {MediaStream} 
+		 */
 		attach: (function(){
 			return (
 				("mozSrcObject" in document.createElement("video"))
@@ -152,6 +148,13 @@ $.when(window._stream || $.stream({video:true,audio:true}))
 				}
 			);
 		}()),
+		
+		/**
+		 * Stop MediaStream
+		 *
+		 * @method $.stream.stop
+		 * @param {HTMLVideoElement|HTMLAudioElement|jQuery.<(HTMLVideoElement|HTMLAudioElement)>} target
+		 */
 		stop: (function(){
 			return (
 				("mozSrcObject" in document.createElement("video"))
@@ -190,7 +193,7 @@ $.when(window._stream || $.stream({video:true,audio:true}))
 	 * https://developer.mozilla.org/en-US/docs/Web/API/Navigator.getUserMedia
 	 *
 	 * @method $.getUserMedia
-	 * @param constraints {Object} Options: video, audio
+	 * @param {Object} constraints Options: video, audio
 	 * @returns {$.Deferred}
 	$.getUserMedia = (function(){
 		var nav = navigator,
@@ -242,21 +245,21 @@ $.getUserMedia({video:true})
 		
 		/**
 		 *
-		 * Define stream:
+		 * @example // Define stream:
 		 *     $("video").stream({video:true, audio:true}, {autoplay:true, muted:true})
 		 *     $("video").stream("video", true)
 		 *     $("audio").stream("audio", true)
 		 *
 		 * 
-		 * Control stream:
+		 * @example // Control stream:
 		 *     $("video").stream("play")
 		 *     $("video").stream("pause")
 		 *     $("video").stream("stop")
 		 *
 		 * @method $.fn.stream
-		 * @param stream {MediaStream || Object {video,audio || "video" || "audio"}
-		 * @param options {Object} Options: autoplay, muted
-		 * @param qType {Scalar} jQuery queue type
+		 * @param {MediaStream|Object.<{video:true,audio:true},{video:true},{audio:true}>} stream
+		 * @param {Object} options Options: autoplay, muted
+		 * @param {Scalar} qType jQuery queue type
 		 * @chainable
 		 */
 		stream: function (stream, options, qType) {
