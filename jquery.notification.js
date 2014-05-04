@@ -29,7 +29,8 @@ $.notification = (function(){
 	var Notification = window.Notification || window.mozNotification || webkitNotification;
 	
 	var notify = function (title, options, events) {
-		if (fn.useNative && Notification && Notification.permission === "granted") {
+		options = options || {};
+		if (fn.useNative && options.useNative !== false  && Notification && Notification.permission === "granted") {
 			var n = new Notification(title,options);
 			if (events) $(n).on(events);
 			return n;
@@ -39,7 +40,9 @@ $.notification = (function(){
 	};
 	
 	var fn = function (title, options, events) {
-		if (fn.useNative && Notification && Notification.permission === "default") {
+		options = options || {};
+		console.log("fn", arguments);
+		if (fn.useNative && options.useNative !== false && Notification && Notification.permission === "default") {
 			return fn.requestPermission().always(function(){
 				notify(title, options, events);
 			});
