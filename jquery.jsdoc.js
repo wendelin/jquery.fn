@@ -98,7 +98,10 @@ var asyncParseFile = jsdoc.asyncParse.file = function (file, options, catchErr) 
 	return (
 		($.blob && $.blob.readAsText && file instanceof File) 
 		? $.blob.readAsText(file, {async:true})
-		: $.get(file,"text")
+		: $.ajax({
+			url: file,
+			dataType: "text"
+		})
 	).then(function(code){
 		return $.jsdoc.parse.comments(code, options, catchErr);
 	});
