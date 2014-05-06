@@ -15,20 +15,13 @@ var unindent = function (content) {
 
 
 var jsdoc = {
-	parse: {
-		comment: parseComment,
-		comments: parseComments
-	},
-	asyncParse: {
-		file: asyncParseFile,
-		files: asyncParseFiles
-	}
+	parse: {},
+	asyncParse: {}
 };
 
 
 /**
- * Parse comments returns an object map with line numbers paired with
- * parsed comment output.
+ * Parse comments
  *
  * @method $.jsdoc.parse.comment
  * @param {String} code
@@ -42,19 +35,19 @@ var parseComment = jsdoc.parse.comment = function (comment, options, catchErr) {
 	if (!catchErr) return doctrine.parse(comment, options);
 	try {
 		return doctrine.parse(comment, options);
-	} catch (err) {
+	} catch (err) {
 		return {error: err};
 	}
 };
 
 /**
  * Parse comments
- * Returns an array of parsed comments with the "line" number included.
+ * Returns an array of parsed comments with the "lineNumber" number included.
  *
  * @method $.jsdoc.parse.comments
  * @param {String} code
  * @param {Object} options
- * @returns {Array}
+ * @returns {Array.<Object.<{lineNumber:Integer,comments:Array}>>}
  */
 var parseComments = jsdoc.parse.comments = function (code, options, catchErr) {
 	var lines = code.split(/\r\n|\n/),
@@ -79,7 +72,7 @@ var parseComments = jsdoc.parse.comments = function (code, options, catchErr) {
 			
 			comments.push(
 				$.extend(
-					{line:linenum},
+					{lineNumber:linenum},
 					parseComment(commentlines.join("\n"), options, catchErr)
 				)
 			);
@@ -89,10 +82,14 @@ var parseComments = jsdoc.parse.comments = function (code, options, catchErr) {
 };
 
 /**
+ * Parse a file accessible via URL or defined by File instance.
+ * @example $.jsdoc.asyncParse.file($('input[type="file"]').prop("files")[0])
+ * 
  * @method $.jsdoc.asyncParse.file
- * @param {URL} file
+ * @param {URL|File} file
  * @param {Object} options
  * @param {Boolean} catchErr
+ * @returns {$.Deferred}
  */
 var asyncParseFile = jsdoc.asyncParse.file = function (file, options, catchErr) {
 	return (
@@ -103,7 +100,15 @@ var asyncParseFile = jsdoc.asyncParse.file = function (file, options, catchErr) 
 			dataType: "text"
 		})
 	).then(function(code){
-		return $.jsdoc.parse.comments(code, options, catchErr);
+		var comments = $.jsdoc.parse.comments(code, options, catchErr);
+		return {
+			file: (
+				file instanceof File
+				? file.name
+				: file
+			),
+			comments: comments
+		};
 	});
 };
 
@@ -112,22 +117,14 @@ var asyncParseFile = jsdoc.asyncParse.file = function (file, options, catchErr) 
  * @param {Array} files
  * @param {Object} options
  * @param {Boolean} catchErr
+ * @returns {$.Deferred}
  */
-var asyncParseFiles = jsdoc.asyncParse.files = function (files, options, catchErr) {
+jsdoc.asyncParse.files = function (files, options, catchErr) {
 	var getters = [];
 	
 	$.each(files, function(i,file){
 		getters.push(
-			asyncParseFile(file, options, catchErr).then(function(result){
-				return {
-					file: (
-						file instanceof File
-						? file.name
-						: file
-					),
-					comments: result
-				};
-			})
+			asyncParseFile(file, options, catchErr)
 		);
 	});
 	
@@ -135,9 +132,6 @@ var asyncParseFiles = jsdoc.asyncParse.files = function (files, options, catchEr
 		return $.makeArray(arguments);
 	});
 };
-
-
-
 
 
 $.jsdoc = jsdoc;
