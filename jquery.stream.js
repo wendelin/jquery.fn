@@ -1,3 +1,10 @@
+/**
+ * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
+ * Licensed under the MIT License.
+ * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
+ */
+
+
 (function($){
 	var DEBUG = true;
 	
@@ -19,7 +26,7 @@
 	 * @public
 	 * @method $.stream
 	 * @param {Object} options Options: video, audio
-	 * @returns {Object} $.Deferred instance that when successful reuturns the MediaStream
+	 * @returns {Object} $.Deferred instance that when successful returns the MediaStream
 	 */
 	$.stream = (function(){
 		/**
@@ -76,17 +83,17 @@
 	 * @todo Debug this in multiple different browsers.
 	 *
 	 * @example // Record 5 seconds of video and audio using FireFox
-	 *    $("video")
-	 *    .stream({video:true,audio:true},{autoplay:true})
-	 *    .queue(function(){
-	 *        var stream = this.mozSrcObject
-	 *        console.log(stream);
-	 *        $.stream.record(stream,5000)
-	 *        .then(function(blob){
-	 *            $.blob.save(blob);
-	 *            stream.stop();
-	 *        }, console.warn);
-	 *    });
+	 * $("video")
+	 * .stream({video:true,audio:true},{autoplay:true})
+	 * .queue(function(){
+	 *     var stream = this.mozSrcObject
+	 *     console.log(stream);
+	 *     $.stream.record(stream,5000)
+	 *     .then(function(blob){
+	 *         $.blob.save(blob);
+	 *         stream.stop();
+	 *     }, console.warn);
+	 * });
 	 *
 	 * @example // Record 5 seconds of video and audio.
 	 * $.stream({video:true,audio:true})
@@ -129,7 +136,7 @@
 		 *
 		 * @method $.stream.attach
 		 * @param {HTMLVideoElement|HTMLAudioElement|jQuery.<(HTMLVideoElement|HTMLAudioElement)>} target
-		 * @param {MediaStream} 
+		 * @param {MediaStream} stream
 		 */
 		attach: (function(){
 			return (
@@ -244,20 +251,23 @@ $.getUserMedia({video:true})
 	$.fn.extend({
 		
 		/**
-		 *
 		 * @example // Define stream:
-		 *     $("video").stream({video:true, audio:true}, {autoplay:true, muted:true})
-		 *     $("video").stream("video", true)
-		 *     $("audio").stream("audio", true)
-		 *
+		 * $("video").stream({video:true, audio:true}, {autoplay:true, muted:true})
+		 * $("video").stream("video", true)
+		 * $("audio").stream("audio", true)
+		 * 
 		 * 
 		 * @example // Control stream:
-		 *     $("video").stream("play")
-		 *     $("video").stream("pause")
-		 *     $("video").stream("stop")
+		 * $("video").stream("play")
+		 * $("video").stream("pause")
+		 * $("video").stream("stop")
 		 *
 		 * @method $.fn.stream
-		 * @param {MediaStream|Object.<{video:true,audio:true},{video:true},{audio:true}>} stream
+		 * @param {
+		 *   MediaStream
+		 *   |Object.<{video:Boolean,audio:Boolean}>
+		 *   |String.<{"video","audio"}>
+		 * } stream
 		 * @param {Object} options Options: autoplay, muted
 		 * @param {Scalar} qType jQuery queue type
 		 * @chainable

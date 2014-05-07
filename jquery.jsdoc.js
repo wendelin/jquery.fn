@@ -1,4 +1,10 @@
 /**
+ * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
+ * Licensed under the MIT License.
+ * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
+ */
+
+/**
  * Wrapper for doctrine.
  * @see https://github.com/Constellation/doctrine
  */

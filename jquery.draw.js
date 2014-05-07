@@ -1,3 +1,8 @@
+/**
+ * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
+ * Licensed under the MIT License.
+ * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
+ */
 (function($){
 	var DEBUG = 3;
 	
@@ -26,9 +31,15 @@
 	 * @private
 	 * @method _elementToCanvas
 	 * @param {HTMLVideo|HTMLCanvasElement|HTMLImageElement} item
-	 * @param {HTMLCanvasElement || jQuery Set of HTMLCanvasElements} canvas
-	 * @param {Object} resize Optional resize parameters: width, height, maxWidth, maxHeight, scale
-	 * @returns {HTMLCanvasElement || jQuery set of single HTMLCanvasElement}
+	 * @param {HTMLCanvasElement|jQuery-Set-of-HTMLCanvasElements} canvas
+	 * @param {Object.<({
+	 *   width:Number,
+	 *   height:Number,
+	 *   maxWidth:Number,
+	 *   maxHeight:Number,
+	 *   scale:Boolean
+	 * })>=} resize
+	 * @returns {HTMLCanvasElement|jQuery-set-of-single-HTMLCanvasElement}
 	 */
 	var _elementToCanvas = function (item, canvas, resize) {
 		if (DEBUG > 2) console.log("_elementToCanvas", item, canvas, resize);
@@ -141,8 +152,15 @@
 	 * @private
 	 * @method _canvas2url
 	 * @param {HTMLCanvasElement} canvas
-	 * @param {Object} options Optional resize parameters: type, quality
-	 * @returns {}
+	 * @param {Object.<({
+	 *   type:String,
+	 *   quality:Integer
+	 * })>=} options
+	 * @param {String.<({
+	 *   "image/jpeg",
+	 *   "image/webp"
+	 * })>=} options.type
+	 * @returns {DataURL}
 	 */
 	var _canvas2url = function (canvas, options) {
 		if (DEBUG > 2) console.log("_canvas2url", canvas, options);
@@ -283,7 +301,15 @@
 	 * @method $.draw
 	 * @param {URL|HTMLElement|jQuery-set|File|Blob} source
 	 * @param {HTMLElement|jQuery-set} target If undefined a new HTMLCanvasElement is used
-	 * @param {Object.<{type:Scalar,width:Integer,height:Integer,scale:Boolean,async:Boolean,maxWidth:Integer,maxHeight:Integer}>} options Options: type, width, height, scale, async
+	 * @param {Object.<{
+	 *   type:Scalar,
+	 *   width:Integer,
+	 *   height:Integer,
+	 *   scale:Boolean,
+	 *   async:Boolean,
+	 *   maxWidth:Integer,
+	 *   maxHeight:Integer
+	 * }>=} options
 	 * @returns {Object} target or if async=true $.Deferred instance that when successful returns the target
 	 */
 	$.draw = function (source, target, options) {
