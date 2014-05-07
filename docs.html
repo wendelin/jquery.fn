@@ -147,6 +147,16 @@ body {
 #content [data-type] > .badge {
 	font-size: 75%;
 }
+
+
+#notifications {
+	position: absolute;
+	right: 20px;
+	top: 20px;
+	z-index: 99999;
+	min-width:300px;
+}
+
 	</style>
 	
 	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
@@ -157,6 +167,8 @@ body {
 </head>
 
 <body>
+	<div id="notifications" aria-live="assertive"></div>
+	
 	<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -190,7 +202,6 @@ body {
 				<ul class="nav nav-sidebar"></ul>
 			</div>
 			<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2" id="main">
-				<div id="notifications" aria-live="assertive"></div>
 				<h1 class="page-header">jquery.fn</h1>
 				<p class="lead">These are a series of jquery plugins.</p>
 				<p class="small">(You can drag/drop your js files into the browser to parse their jsDoc notation.)</p>
@@ -236,6 +247,7 @@ body {
 		{{/each}}
 	</script>
 	
+	
 	<script data-jsdoc-tmpl="file" type="text/x-handlebars-template">
 		<div class="panel panel-primary">
 			<span id="{{jsdoc-uid file}}" class="anchor"></span>
@@ -245,7 +257,37 @@ body {
 					{{#each comments}}
 						<li class="list-group-item"
 							{{~#jsdoc-loop-tags "boolean" tags}} data-jsdoc-{{title}}="true"{{/jsdoc-loop-tags~}}>
-							{{~jsdoc-tmpl "comment"~}}
+							<span id="{{jsdoc-uid ../file ./lineNumber}}" class="anchor"></span>
+							
+							<span class="badge" title="lineNumber">{{lineNumber}}</span>
+							
+							{{~#jsdoc-loop-tags "main" tags~}}
+								<h5 class="list-group-item-heading" title="{{title}}">
+									{{~name~}}
+									{{~#jsdoc-loop-tags "boolean" ../tags}} <span class="label label-info" title="{{type}}">{{title}}</span>{{~/jsdoc-loop-tags~}}
+								</h5>
+							{{~/jsdoc-loop-tags~}}
+								
+							
+							{{#if description}}<div class="well">{{{description}}}</div>{{/if}}
+							
+							{{#jsdoc-group-tags tags}}
+								{{#each this}}
+									{{#jsdoc-tmpl "tag-grouped" title this}}{{else}}
+										<dl>
+											<dt>{{title}}</dt>
+											<dd>
+												<ul class="list-unstyled">
+													{{~#each tags~}}
+														{{#if description}}<li><pre>{{description}}</pre></li>{{/if}}
+													{{~/each~}}
+												</ul>
+											</dd>
+										</dl>
+									{{/jsdoc-tmpl}}
+								{{/each}}
+							{{/jsdoc-group-tags}}
+							
 						</li>
 					{{/each}}
 				</ul>
@@ -255,48 +297,13 @@ body {
 		</div>
 	</script>
 	
-	
-	<script data-jsdoc-tmpl="comment" type="text/x-handlebars-template">
-		<span id="{{jsdoc-uid ../file ./lineNumber}}" class="anchor"></span>
-							
-		<span class="badge" title="lineNumber">{{lineNumber}}</span>
-		
-		{{~#jsdoc-loop-tags "main" tags~}}
-			<h5 class="list-group-item-heading" title="{{title}}">
-				{{~name~}}
-				{{~#jsdoc-loop-tags "boolean" ../tags}} <span class="label label-info" title="{{type}}">{{title}}</span>{{~/jsdoc-loop-tags~}}
-			</h5>
-		{{~/jsdoc-loop-tags~}}
-			
-		
-		{{#if description}}<div class="well">{{{description}}}</div>{{/if}}
-		
-		{{#jsdoc-group-tags tags}}
-			{{#each this}}
-				{{#jsdoc-tmpl "tag-grouped" title this}}{{else}}
-					<dl>
-						<dt>{{title}}</dt>
-						<dd>
-							<ul class="list-unstyled">
-								{{~#each tags~}}
-									{{#if description}}<li><pre>{{description}}</pre></li>{{/if}}
-								{{~/each~}}
-							</ul>
-						</dd>
-					</dl>
-				{{/jsdoc-tmpl}}
-			{{/each}}
-		{{/jsdoc-group-tags}}
-	</script>
-	
-	
 	<script data-jsdoc-tmpl="tag-grouped-example" type="text/x-handlebars-template">
 		<dl>
 			<dt>example</dt>
 			<dd>
 				<ul class="list-unstyled">
 					{{~#each tags~}}
-						{{#if description}}<li><pre>{{description}}</pre></li>{{/if}}
+						{{#if description}}<li><pre class="code">{{description}}</pre></li>{{/if}}
 					{{~/each~}}
 				</ul>
 			</dd>
@@ -365,7 +372,7 @@ body {
 	</script>
 	
 	<script data-jsdoc-tmpl="tag-param-UnionType" type="text/x-handlebars-template">
-		<ul class="list-unstyled" data-type="{{type}}">
+		<ul data-type="{{type}}">
 			{{#each elements}}
 				<li>{{jsdoc-tmpl "tag-param" type}}</li>
 			{{/each}}
@@ -373,20 +380,16 @@ body {
 	</script>
 	
 	<script data-jsdoc-tmpl="tag-param-TypeApplication" type="text/x-handlebars-template">
-		<dl data-type="{{type}}">
-			<dt>
-				{{~#if expression}}
-					{{~jsdoc-tmpl "tag-param" expression.type expression~}}
-				{{~/if~}}
-			</dt>
-			<dd>
-				<ul class="list-unstyled">
-					{{~#each applications}}
-						<li>{{jsdoc-tmpl "tag-param" type}}</li>
-					{{~/each~}}
-				</ul>
-			</dd>
-		</dl>
+		<div data-type="{{type}}">
+			{{~#if expression}}
+				{{~jsdoc-tmpl "tag-param" expression.type expression~}}
+			{{~/if~}}
+			<ul>
+				{{~#each applications}}
+					<li>{{jsdoc-tmpl "tag-param" type}}</li>
+				{{~/each~}}
+			</ul>
+		</div>
 	</script>
 	
 	<script data-jsdoc-tmpl="tag-param-RecordType" type="text/x-handlebars-template">
@@ -405,66 +408,84 @@ body {
 	
 	<script src="https://raw.githubusercontent.com/wendelin/doctrine/master/doctrine.js"></script>
 	<script src="jquery.jsdoc.js"></script>
+	
 	<script src="jquery.notification.js"></script>
+	
 	<script src="jquery.draw.js"></script>
+	<script>
+	/**
+	 * Override $.notification.fallback to use bootstrap alerts.
+	 */
+	(function(){
+	$.notification.defaultType = "bootstrap";
+	$.notification.types.bootstrap = function (title, options, events) {
+		options = options || {};
+		var $div;
+		if (options.tag) {
+			$div = $("[data-notification-tag='" + options.tag + "']").first();
+		}
+		if (!$div || !$div.size()) {
+			var pseudoType = "info";
+			if (/^(success|info|warning|danger)/.test(options.tag)) {
+				pseudoType = options.tag.match(/^(success|info|warning|danger)/)[0];
+			}
+			
+			// aria-live="' + ((pseudoType === "warning" || pseudoType === "danger") ? 'assertive' : 'polite') + '" 
+			$div = $('<div role="dialog" class="alert alert-' + pseudoType + '"></div>');
+			
+			if (options.tag) {
+				$div.attr("data-notification-tag", options.tag);
+			}
+		};
+		
+		$div.off().empty();
+		
+		$div.append('<button type="button" class="close" data-dismiss="alert" title="close"><span aria-hidden="true">&times;</div></button>');
+		
+		$('<strong></strong>').text(title).appendTo($div);
+		
+		if (options.body) {
+			$('<span></span>').text(options.body).appendTo($div);
+		}
+		
+		if (events && events.show) events.show();
+		
+		$('#notifications').prepend($div);
+		
+		var close = $div.close = function () {
+			if (events && events.close) events.close();
+			close = $div.close = function(){
+				$div.remove();
+			};
+			$div
+			.attr({
+				"data-notification-tag":"",
+				"aria-hidden":"true"
+			})
+			.fadeTo("slow",0)
+			.slideUp(function(){
+				$div.remove();
+			});
+			/*
+			.animate({ height: 'toggle', opacity: 'toggle' }, 'slow', function(){
+				$div.remove();
+			});
+			*/
+		};
+		
+		$div.on("click","button", function (e) {
+			e.stopPropagation();
+			e.preventDefault();
+			close();
+		});
+	
+		return $div;
+	};
+	}());
+	</script>
 	<script>
 	$(function(){
 		
-		/**
-		 * Override $.notification.fallback to use bootstrap alerts.
-		 */
-		$.notification.fallback = function (title, options, events) {
-			options = options || {};
-			var $div;
-			if (options.tag) {
-				$div = $("[data-notification-tag='" + options.tag + "']").first();
-			}
-			if (!$div || !$div.size()) {
-				var pseudoType = "info";
-				if (/^(success|info|warning|danger)/.test(options.tag)) {
-					pseudoType = options.tag.match(/^(success|info|warning|danger)/)[0];
-				}
-				
-				$div = $('<div role="alertdialog" aria-live="' + ((pseudoType === "warning" || pseudoType === "danger") ? 'assertive' : 'polite') + '" class="alert alert-' + pseudoType + '">'
-					+ '</div>'
-				);
-				
-				if (options.tag) {
-					$div.attr("data-notification-tag", options.tag);
-				}
-			};
-			
-			$div.off().empty();
-			
-			$div.append('<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>');
-			
-			$('<strong></strong>').text(title).appendTo($div);
-			
-			if (options.body) {
-				$('<span></span>').text(options.body).appendTo($div);
-			}
-			
-			if (events && events.show) events.show();
-			
-			$('#notifications').prepend($div);
-			
-			var close = $div.close = function () {
-				if (events && events.close) events.close();
-				close = $div.close = null;
-				$div.attr("data-notification-tag","")
-				.fadeOut(2000, function(){
-					$div.remove();
-				});
-			};
-			
-			$div.on("click","button", function (e) {
-				e.stopPropagation();
-				e.preventDefault();
-				close();
-			});
-		
-			return $div;
-		};
 		
 		var paramTypes = {
 			"boolean":["global","inner","instance","private","protected","public","readonly","static"],
@@ -491,10 +512,6 @@ body {
 		});
 		
 		
-		
-		
-		
-		var noop = function(){return "";};
 		var tmplMap = {
 			"tag-grouped-chainable":null,
 			"tag-grouped-private": null,
@@ -529,13 +546,15 @@ body {
 						tmplMap[tId](context)
 					);
 				} else {
-					// nothing
+					// return nothing
 				}
 			} else {
-				console.group("missing ysdoc tmpl: " + tId);
-				console.warn("context:",context);
-				console.warn("this:", this);
-				console.groupEnd();
+				/*
+					console.group("missing ysdoc tmpl: " + tId);
+					console.warn("context:",context);
+					console.warn("this:", this);
+					console.groupEnd();
+				*/
 				return options.inverse(this);
 			}
 		});
@@ -549,31 +568,6 @@ body {
 			if (!uIdMap[uKey]) uIdMap[uKey] = "u" + uId++;
 			return uIdMap[uKey];
 		});
-		
-		Handlebars.registerHelper('jsdoc-tags-has', function(tags, titles, options) {
-			titles = titles.split(",");
-			var i, a = [], len = tags.length;
-			for (i = 0; i < len; i++) {
-				if (titles.indexOf(tags[i].title) !== -1) {
-					return options.fn(this);
-				}
-			}
-			return options.inverse(this);
-		});
-		
-		Handlebars.registerHelper('jsdoc-tags-filter', function(tags, titles, options) {
-			titles = titles.split(",");
-			var i, a = [], len = tags.length;
-			for (i = 0; i < len; i++) {
-				a.push(
-					(titles.indexOf(tags[i].title) !== -1)
-					? options.fn(tags[i])
-					: options.inverse(tags[i])
-				);
-			}
-			return a.join("");
-		});
-		
 		
 		Handlebars.registerHelper('jsdoc-group-tags', function(tags, options) {
 			var tagGroups = [],
@@ -665,6 +659,7 @@ body {
 				"jquery.jsdoc.js"
 			]
 		);
+		
 	});
 	</script>
 </body>

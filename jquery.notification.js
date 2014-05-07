@@ -15,49 +15,67 @@
  * @example $.notification("foo");
  * @example $.notification("foo", {body:"bar"});
  * @example $.notification("Hit me", {}, {
- *       show: function(){$.notification("Hello");},
- *       close: function(){$.notification("Bye");},
- *       click: function(){$.notification("Clicked");},
- *       error: function(){$.notification("Error");}
- *   })
- * @method $.Notification
+ *     show: function(){$.notification("Hello");},
+ *     close: function(){$.notification("Bye");},
+ *     click: function(){$.notification("Clicked");},
+ *     error: function(){$.notification("Error");}
+ * })
+ * @method $.notification
  * @param {String} title
- * @param {Object.<({dir:String.<'auto','ltr','rtl'>,lang:String,body:String,tag:String,icon:URL})>} options
- * @param {Object} events Optional events
+ * @param {Object.<({
+ *   dir:String.<'auto','ltr','rtl'>,
+ *   lang:String,
+ *   body:String,
+ *   tag:String,
+ *   icon:URL
+ * })>} options
+ * @param {Object.<({
+ *   click:Function,
+ *   close:Function,
+ *   error:Function,
+ *   show:Function
+ * })>} events Optional events
+ * @returns {Notification|jQuery}
  */
 $.notification = (function(){
 	var Notification = window.Notification || window.mozNotification || webkitNotification;
 	
-	var notify = function (title, options, events) {
+	var notify = function (title, options, events, type) {
 		options = options || {};
-		if (fn.useNative && options.useNative !== false  && Notification && Notification.permission === "granted") {
-			var n = new Notification(title,options);
+		if (type === "native"  && Notification && Notification.permission === "granted") {
+			var o = $.extend({},options);
+			delete options["type"];		// remove non standard parameter
+			var n = new Notification(title, options);
 			if (events) $(n).on(events);
 			return n;
 		} else {
-			return fn.fallback(title, options, events);
+			return fn.types[type](title, options, events);
 		}
 	};
 	
 	var fn = function (title, options, events) {
 		options = options || {};
-		console.log("fn", arguments);
-		if (fn.useNative && options.useNative !== false && Notification && Notification.permission === "default") {
+		var type = fn.defaultType;
+		if (!fn.types[type]) type = fn.defaultType;	// ignore invalid "type" / fallback
+		
+		if (type === "native" && Notification && Notification.permission === "default") {
 			return fn.requestPermission().always(function(){
-				notify(title, options, events);
+				return notify(title, options, events, type);
 			});
 			
 		} else {
-			return notify(title, options, events);
+			return notify(title, options, events, type);
 		}
 	};
-	
 	$.extend(fn, {
-		useNative: !! Notification,
-		fallback: function (title, options, events) {
-			if (events && events.show) events.show();
-			alert(title + (options && options.body ? "\n\n" + options.body : ""));
-			if (events && events.close) events.close();
+		defaultType: (!!Notification ? "native" : "alert"),
+		types: {
+			alert:function (title, options, events) {
+				if (events && events.show) events.show();
+				alert(title + (options && options.body ? "\n\n" + options.body : ""));
+				if (events && events.close) events.close();
+				return $.extend({close:function(){}},options);	// returns fake Notification object
+			}
 		},
 		requestPermissionsTimeout: 10000, /* milliseconds */
 		requestPermission: function(){
