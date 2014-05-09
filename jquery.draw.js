@@ -2,6 +2,8 @@
  * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
  * Licensed under the MIT License.
  * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
+ * @requires jquery
+ * @module jquery.draw
  */
 (function($){
 	var DEBUG = 3;
@@ -164,6 +166,7 @@
 	 */
 	var _canvas2url = function (canvas, options) {
 		if (DEBUG > 2) console.log("_canvas2url", canvas, options);
+		options = options || {};
 		return (
 			(/^image\/(jpeg|webp)$/.test(options.type))
 			? canvas.toDataURL(options.type, ((options.quality||1)/1))
@@ -528,14 +531,16 @@
 		},
 		
 		/**
-		 * File/Blob size.
-		 * Getting the size of a blob in bytes is best done directly (blob.size).
+		 * <p>File/Blob size getter</p>
+		 * <p>Getting the size of a blob in bytes is best done directly (blob.size).<br />
 		 * This method has the advantage that it can convert the bytes value into
-		 * a human readable format.
+		 * a human readable format.</p>
+		 *
+		 * @example $.blob.size(new Blob(["Hello World!"]), true);
 		 *
 		 * @method $.blob.size
 		 * @param {File|Blob} blob
-		 * @param {Boolean} humanReadable
+		 * @param {Boolean=} humanReadable
 		 * @returns {String}
 		 */
 		size: function (blob, humanReadable) {
@@ -545,8 +550,7 @@
 		/**
 		 * Blob/File converter that supports changing of type & dimensions.
 		 *
-		 * Options:
-		 *  See: async_blob2Canvas
+		 * @see async_blob2Canvas
 		 *
 		 * @method $.blob.convert
 		 * @param {File|Blob} blob
@@ -621,9 +625,9 @@
 		 * Type test, supports general type testing ("image","audio","video",...) and
 		 * specific type testing ("application/zip", "image/png", "image/jpeg",...).
 		 *
-		 * @example $.blob.is(blob);
-		 * @example $.blob.is(blob, "image");
-		 * @example $.blob.is(blob, "image/png");
+		 * @example $.blob.is(new Blob(["Hello World!"]));
+		 * @example $.blob.is("wrong", "image");
+		 * @example $.blob.is(null, "image/png");
 		 *
 		 * @method $.blob.is
 		 * @param {Blob|File} blob Valid blob or file
@@ -632,12 +636,15 @@
 		 */
 		is: function (blob, str) {
 			return (
-				blob
+				!! blob
 				&& blob instanceof Blob
 				&& (
-					(str.indexOf("/") === -1)
-					? (new RegExp("^" + str + "\/")).test(blob.type)
-					: str === blob.type
+					!str
+					|| (
+						(str.indexOf("/") === -1)
+						? (new RegExp("^" + str + "\/")).test(blob.type)
+						: str === blob.type
+					)
 				)
 			);
 		}
@@ -651,28 +658,28 @@
 	/**
 	 * @method $.blob.readAsArrayBuffer
 	 * @param {File|Blob} blob
-	 * @param {Object} options
+	 * @param {Object=} options
 	 * @returns {$.Deferred}
 	 */
 	
 	/**
 	 * @method $.blob.readAsBinaryString
 	 * @param {File|Blob} blob
-	 * @param {Object} options
+	 * @param {Object=} options
 	 * @returns {$.Deferred}
 	 */
 	
 	/**
 	 * @method $.blob.readAsDataURL
 	 * @param {File|Blob} blob
-	 * @param {Object} options
+	 * @param {Object=} options
 	 * @returns {$.Deferred}
 	 */
 	
 	/**
 	 * @method $.blob.readAsText
 	 * @param {File|Blob} blob
-	 * @param {Object} options
+	 * @param {Object=} options
 	 * @returns {$.Deferred}
 	 */
 	$.each(["readAsArrayBuffer","readAsBinaryString","readAsDataURL","readAsText"], function(i, method){
@@ -711,8 +718,8 @@
 	 *
 	 * @method $.dataURL
 	 * @param {File|Blob|HTMLVideoElement|HTMLCanvasElement|HTMLImageElement} source
-	 * @param {Object} options Options: multiple, convert, async, width, height, type
-	 * @returns {URL || $.Deferred()}
+	 * @param {Object=} options Options: multiple, convert, async, width, height, type
+	 * @returns {URL|$.Deferred}
 	 */
 	$.dataURL = function (source, options) {
 		if (DEBUG) console.info("$.dataURL", source, options);
@@ -795,7 +802,7 @@
 		 *
 		 * @method $.dataURL.rawSize
 		 * @param {String} url
-		 * @param {Boolean} humanReadable
+		 * @param {Boolean=} humanReadable
 		 * @returns {String}
 		 */
 		rawSize: function (url, humanReadable) {
@@ -809,7 +816,7 @@
 		 *
 		 * @method $.dataURL.size
 		 * @param {String} url
-		 * @param {Boolean} humanReadable
+		 * @param {Boolean=} humanReadable
 		 * @returns {String}
 		 */
 		size: function (url, humanReadable) {
@@ -837,8 +844,8 @@
 		 * Support for normal URLs is also added.
 		 *
 		 * @method $.dataURL.save
-		 * @param {String} url Valid dataURL || URL
-		 * @param {String} name
+		 * @param {URL} url Valid dataURL or URL
+		 * @param {String=} name
 		 */
 		save: function (url, name) {
 			var a = document.createElement("a");
@@ -854,13 +861,13 @@
 		 * Type test, supports general type testing ("image","audio","video",...) and
 		 * specific type testing ("application/zip", "image/png", "image/jpeg",...).
 		 *
-		 * @example $.dataURL.is(url);
-		 * @example $.dataURL.is(url, "image");
-		 * @example $.dataURL.is(url, "image/png");
+		 * @example $.dataURL.is(null);
+		 * @example $.dataURL.is("wrong", "image");
+		 * @example $.dataURL.is("data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7", "image/gif");
 		 *
 		 * @method $.dataURL.is
 		 * @param {String} url Valid dataURL
-		 * @param {String} str Test string
+		 * @param {String=} str Test string
 		 * @returns {Boolean}
 		 */
 		is: function (url, str) {
@@ -890,7 +897,7 @@
 	 *
 	 * @method $.save
 	 * @param {File|Blob|HTMLVideoElement|HTMLCanvasElement|HTMLImageElement} source
-	 * @param {Object} options Options: convert, async, width, height, type, name
+	 * @param {Object=} options Options: convert, async, width, height, type, name
 	 */
 	$.save = function (source, options) {
 		options = $.extend(options||{}, {async:true});
@@ -953,16 +960,14 @@
 		 *   <dt>quality {Integer}</dt>  <dd>Image quality</dd>
 		 * </dl>
 		 *
-		 * @example $('input[type="file"]').blob({multiple:true});
-		 *   Get array of File[s] for all upload fields:
-		 * @example Get array of Blob[s] forcibly converted from all upload fields (only works with images)
-		 *   $("input[type="file"][multiple]")
+		 * @example // Get array of File[s] for all upload fields:
+		 *   $('input[type="file"]').blob({multiple:true});
+		 * @example // Get array of Blob[s] forcibly converted from all upload fields (only works with images)
+		 * $('input[type="file"][multiple]')
 		 *    .blob({convert:true, async:true, multiple:true, width:40, scale:true})
-		 *    .then(console.info,console.warn);
 		 * @example $("img").blob({multiple:true});
-		 * @example $('input[type="file"]')
-		 *   .blob({convert:true,async:true,type:"image/jpeg",width:100,scale:true})
-		 *   .then(console.info,console.warn);
+		 * @example $('input[type="file"][multiple]')
+		 *   .blob({multiple:true,convert:true,async:true,type:"image/jpeg",width:100,scale:true})
 		 * @method $.fn.blob
 		 * @param {Object} options Options: multiple, async, type, convert, width, height, scale
 		 * @returns {Blob|File|$.Deferred}
@@ -1063,7 +1068,7 @@
 		 *   <dt>scale {Boolean}</dt>    <dd>Resize scaling/keep aspect ratio when resizing</dd>
 		 * </dl>
 		 *
-		 * @example Get array of File[s] for all upload fields:
+		 * @example // Get array of File[s] for all upload fields:
 		 *   $('input[type="file"]').blob({multiple:true});
 		 *
 		 * @method $.fn.save

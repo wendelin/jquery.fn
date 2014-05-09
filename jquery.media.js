@@ -2,6 +2,8 @@
  * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
  * Licensed under the MIT License.
  * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
+ * @requires jquery
+ * @module jquery.media
  */
 (function($){
 	var DEBUG = true;
@@ -12,21 +14,25 @@
 		 * <p>This method is used to control media elements (&lt;video&gt;,&lt;audio&gt;).<p>
 		 * 
 		 * <p>Note:<br/>
-		 *     There is no support for File|Blob objects!</p>
+		 *     There is no support for File|Blob objects! (...yet)</p>
 		 *
-		 * @example Defining single media file:
-		 *     $("video).media({src:"movie.mp4",type:'audio/mp4; codecs="mp4a.40.2"'})
+		 * @example // Defining single media file:
+		 *     $("video").media({src:"movie.mp4",type:'audio/mp4; codecs="mp4a.40.2"'})
 		 * 
-		 * @example Define multiple (alternative) media files:
+		 * @example // Define multiple (alternative) media files:
 		 *     $("video").media([
 		 *         {src:"movie.ogg", type:'video/ogg; codecs="theora, vorbis"'},
 		 *         {src:"movie.mp4", type:'video/mp4; codecs="avc1.4D401E, mp4a.40.2"'}
 		 *     ]);
 		 * 
-		 * @example Control media:
+		 * @example // Play media:
 		 *     $("video").media("play");
+		 * 
+		 * @example // Pause media:
 		 *     $("video").media("pause");
-		 *     $("video").media("load");		// No idea whether keeping this makes much sense.
+		 * 
+		 * @example // Load media - No idea whether keeping this makes much sense.:
+		 *     $("video").media("load");
 		 *
 		 *
 		 * @method $.fn.media

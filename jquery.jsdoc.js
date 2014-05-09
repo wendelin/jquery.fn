@@ -1,15 +1,15 @@
 /**
+ * Wrapper for doctrine.
  * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
  * Licensed under the MIT License.
  * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
- */
-
-/**
- * Wrapper for doctrine.
  * @see https://github.com/Constellation/doctrine
+ * @requires jquery
+ * @requires doctrine
+ * @module jquery.jsdoc
  */
-(function($){
 
+(function($){
 
 var unindent = function (content) {
 	var indent = content.match(/^(\s+\*?)/);
@@ -27,8 +27,10 @@ var jsdoc = {
 
 
 /**
- * Parse comments
- *
+ * Parse comment
+ * 
+ * @example $.jsdoc.parse.comment('@method foo\n@param {String} bar\n@returns {Boolean}');
+ * 
  * @method $.jsdoc.parse.comment
  * @param {String} code
  * @param {Object} options
@@ -89,7 +91,8 @@ var parseComments = jsdoc.parse.comments = function (code, options, catchErr) {
 
 /**
  * Parse a file accessible via URL or defined by File instance.
- * @example $.jsdoc.asyncParse.file($('input[type="file"]').prop("files")[0])
+ * @example $.jsdoc.asyncParse.file("./jquery.jsdoc.js");
+ * @example $.jsdoc.asyncParse.file(new Blob(["/**\n@file dummy\n*"+"/"]))
  * 
  * @method $.jsdoc.asyncParse.file
  * @param {URL|File} file
@@ -98,24 +101,24 @@ var parseComments = jsdoc.parse.comments = function (code, options, catchErr) {
  * @returns {$.Deferred}
  */
 var asyncParseFile = jsdoc.asyncParse.file = function (file, options, catchErr) {
-	return (
-		($.blob && $.blob.readAsText && file instanceof File) 
-		? $.blob.readAsText(file, {async:true})
-		: $.ajax({
+	if ($.blob && $.blob.is(file)) {
+		return $.blob.readAsText(file, {async:true}).then(function(code){
+			return {
+				comments:$.jsdoc.parse.comments(code, options, catchErr),
+				file: file.name || file + " " + $.blob.size(file,true)
+			};
+		})
+	} else {
+		return $.ajax({
 			url: file,
 			dataType: "text"
-		})
-	).then(function(code){
-		var comments = $.jsdoc.parse.comments(code, options, catchErr);
-		return {
-			file: (
-				file instanceof File
-				? file.name
-				: file
-			),
-			comments: comments
-		};
-	});
+		}).then(function(code){
+			return {
+				comments:$.jsdoc.parse.comments(code, options, catchErr),
+				file: file
+			}
+		}, function(o){return ("status" in o) ? o.status + ": " + o.statusText : o;});
+	}
 };
 
 /**

@@ -2,6 +2,8 @@
  * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
  * Licensed under the MIT License.
  * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
+ * @requires jquery
+ * @module jquery.stream
  */
 
 
@@ -83,27 +85,28 @@
 	 * @todo Debug this in multiple different browsers.
 	 *
 	 * @example // Record 5 seconds of video and audio using FireFox
+	 * // Chainable, but not recommended
 	 * $("video")
 	 * .stream({video:true,audio:true},{autoplay:true})
 	 * .queue(function(){
 	 *     var stream = this.mozSrcObject
-	 *     console.log(stream);
 	 *     $.stream.record(stream,5000)
 	 *     .then(function(blob){
 	 *         $.blob.save(blob);
 	 *         stream.stop();
-	 *     }, console.warn);
+	 *     });
 	 * });
 	 *
 	 * @example // Record 5 seconds of video and audio.
 	 * $.stream({video:true,audio:true})
 	 * .then(function(stream){
-	 *     $.stream.record(stream,5000)
+	 *     return $.stream.record(stream,5000)
 	 *     .then(function(blob){
 	 *         $.blob.save(blob);
 	 *         stream.stop();
-	 *     }, console.warn);
-	 * }, console.warn);
+	 *         return blob;
+	 *     });
+	 * });
 	 *
 	 * @public
 	 * @method $.stream.record
@@ -309,5 +312,10 @@ $.getUserMedia({video:true})
 			});
 		}
 	});
-	
+
+
+if ( typeof define === "function" && define.amd ) {
+	define( "jquery.stream", [], function () { return jQuery; } );
+}
+
 }(jQuery));
