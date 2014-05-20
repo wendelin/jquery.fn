@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta name="author" content="Wendelin Thomas" />
+	<meta name="description" content="jQuery plugins" />
+	
+	<title>jquery.fn</title>
+	
+	<link rel="stylesheet" href="../external/bootstrap/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="../external/font-awesome/css/font-awesome.min.css" />
+	<link rel="stylesheet" href="../external/qunit/qunit.css" />
+	
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+
+	<!--	
+	<style>
+	#tools {
+		border: 0 none;
+		clip: rect(0px, 0px, 0px, 0px);
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		padding: 0;
+		position: absolute;
+		width: 1px;
+	}
+	</style>
+	-->
+</head>
+
+<body>
+	<div id="notifications" aria-live="assertive"></div>
+	
+	<div class="navbar navbar-inverse" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="../index.html">jquery.fn</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="../index.html">Home</a></li>
+					<li><a href="../docs/index.html">Docs</a></li>
+					<li class="active"><a href="./index.html">Tests</a></li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	
+	
+	<script src="../external/require/require.js"></script>
+	<script>
+	require.config({
+		baseUrl: './',
+		paths: {
+			// the left side is the module ID,
+			// the right side is the path to
+			// the jQuery file, relative to baseUrl.
+			// Also, the path should NOT include
+			// the '.js' file extension. This example
+			// is using jQuery 1.9.0 located at
+			// js/lib/jquery-1.9.0.js, relative to
+			// the HTML page.
+			jquery: "../external/jquery/jquery.min",
+			bootstrap: "../external/bootstrap/js/bootstrap.min",
+			handlebars: "../external/handlebars/handlebars",
+			doctrine: "../external/doctrine/doctrine",
+			
+			"jquery.draw": "../jquery.draw",
+			"jquery.blob": "../jquery.blob",
+			"jquery.dataURL": "../jquery.dataURL",
+			"jquery.save": "../jquery.save",
+			
+			
+			"jquery.media": "../jquery.media",
+			"jquery.stream": "../jquery.stream",
+			"jquery.jsdoc": "../jquery.jsdoc",
+			
+			"jquery.notification": "../jquery.notification",
+			"jquery.notification.bootstrap": "../jquery.notification.bootstrap",
+		}
+	});
+	</script>
+	
+	
+	<script src="../external/jquery/jquery.min.js"></script>
+	<script src="../external/bootstrap/js/bootstrap.min.js"></script>
+
+	<!--
+	BAD IDEA, slows testing down
+	<form role="form">
+		<div class="container">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<h4 class="panel-title">Test data</h4>
+				</div>
+				<div class="panel-body">
+					<div class="form-horizontal"x>
+						<div class="form-group">
+							<label for="f1" class="col-sm-2 control-label">single image</label>
+							<div class="col-sm-10">
+								<input id="f1" type="file" required="required" accept="image/*" />
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="f1" class="col-sm-2 control-label">multiple images</label>
+							<div class="col-sm-10">
+								<input id="f1" type="file" required="required" accept="image/*" multiple="multiple" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="panel-footer text-right">
+					<button class="btn btn-default" type="reset">Reset</button>
+					<button class="btn btn-primary type="submit">Submit</button>
+				</div>
+			</div>
+		</div>
+	</form>
+	-->
+	
+	<div class="container">
+		<div id="qunit"></div>
+		<div id="qunit-fixture"></div>
+	</div>
+	<script src="../external/qunit/qunit.js"></script>
+	
+	<script>
+	QUnit.config.autostart = true;
+	</script>
+	
+	<script src="./jquery.draw.test.js"></script>
+	<script src="./jquery.blob.test.js"></script>
+	<script src="./jquery.dataURL.test.js"></script>
+	
+	
+	<script src="./jquery.media.test.js"></script>
+	<script src="./jquery.stream.test.js"></script>
+	
+	
+	<script>
+	/*
+	$(function(){
+		$("input,button").prop("disabled",false);
+		$("form").one("submit", function(e){
+			$("input,button").prop("disabled",true);
+			$("form").on("submit",false);
+			QUnit.start();
+			return false;
+		});
+	});
+	*/
+	</script>
+	
+	
+</body>
+</html>

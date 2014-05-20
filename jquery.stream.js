@@ -10,6 +10,8 @@
 (function($){
 	var DEBUG = true;
 	
+	var MediaStream = window.MediaStream || webkitMediaStream || mozMediaStream;
+	
 	
 	/**
 	 * <p>Get a media stream.</p>
@@ -27,7 +29,7 @@
 	 *
 	 * @public
 	 * @method $.stream
-	 * @param {Object} options Options: video, audio
+	 * @param {Object.<{audio:Boolean},{video:Boolean}>|String.<{"audio","video"}>} options
 	 * @returns {Object} $.Deferred instance that when successful returns the MediaStream
 	 */
 	$.stream = (function(){
@@ -170,19 +172,27 @@
 				("mozSrcObject" in document.createElement("video"))
 				? function (target) {
 					if (DEBUG) console.info("$.stream.stop", target);
-					$(target).each(function(){
-						if (this.mozSrcObject) {
-							this.mozSrcObject.stop();
-							this.mozSrcObject = null;
-						}
-					});
+					if (target instanceof MediaStream) {
+						target.stop();
+					} else {
+						$(target).each(function(){
+							if (this.mozSrcObject) {
+								this.mozSrcObject.stop();
+								this.mozSrcObject = null;
+							}
+						});
+					}
 				}
 				: function (target) {
 					if (DEBUG) console.info("$.stream.stop", target);
-					var stream = $(target).data("MediaStream"),
-						src = target.src;
-					if (stream) stream.stop();
-					if (src) URL.revokeObjectURL(src);
+					if (target instanceof MediaStream) {
+						target.stop();
+					} else {
+						var stream = $(target).data("MediaStream"),
+							src = target.src;
+						if (stream) stream.stop();
+						if (src) URL.revokeObjectURL(src);
+					}
 				}
 			);
 		}())
@@ -254,16 +264,12 @@ $.getUserMedia({video:true})
 	$.fn.extend({
 		
 		/**
-		 * @example // Define stream:
-		 * $("video").stream({video:true, audio:true}, {autoplay:true, muted:true})
-		 * $("video").stream("video", true)
-		 * $("audio").stream("audio", true)
-		 * 
-		 * 
-		 * @example // Control stream:
-		 * $("video").stream("play")
-		 * $("video").stream("pause")
-		 * $("video").stream("stop")
+		 * @example $("<video/>").stream({video:true, audio:true}, {autoplay:true, muted:true})
+		 * @example $("video").stream("video", true)
+		 * @example $("audio").stream("audio", true)
+		 * @example $("video").stream("play")
+		 * @example $("video").stream("pause")
+		 * @example $("video").stream("stop")
 		 *
 		 * @method $.fn.stream
 		 * @param {
@@ -282,7 +288,7 @@ $.getUserMedia({video:true})
 			if (DEBUG) console.info("$.fn.stream", this, stream, options, qType);
 			
 			if (stream instanceof MediaStream) {
-				$.mediaStream.attach(this, stream);
+				$.stream.attach(this, stream);
 				return this.attr(options);
 			}
 			

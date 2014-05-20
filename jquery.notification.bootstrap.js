@@ -3,6 +3,7 @@
  * Licensed under the MIT License.
  * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
  * @requires jquery.notification
+ * @requires bootstrap
  * @augments jquery.notification
  * @module jquery.notification.bootstrap
  */
@@ -35,9 +36,11 @@ $.notification.types.bootstrap = function (title, options, events) {
 	
 	$div.off().empty();
 	
-	$div.append('<button type="button" class="close" data-dismiss="alert" title="close"><span aria-hidden="true">&times;</div></button>');
-	
-	$('<strong></strong>').text(title).appendTo($div);
+	$div.append('<button type="button" class="close" data-dismiss="alert" title="close"><span aria-hidden="true">&times;</div></button>',
+		$('<div></div>').append(
+			$('<strong></strong>').text(title).appendTo($div)
+		)
+	);
 	
 	if (options.body) {
 		$('<span></span>').text(options.body).appendTo($div);
@@ -74,6 +77,13 @@ $.notification.types.bootstrap = function (title, options, events) {
 		close();
 	});
 	
+	if (events && events.click) $div.on("click","div", events.click);
+	
 	return $div;
 };
+
+
+// Change $.notification to use bootstrap alerts by default.
+$.notification.defaultType = "bootstrap";
+
 }(jQuery));

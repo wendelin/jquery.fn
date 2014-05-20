@@ -48,7 +48,7 @@
  * @returns {Notification|jQuery}
  */
 $.notification = (function(){
-	var Notification = window.Notification || window.mozNotification || webkitNotification;
+	var Notification = window.Notification || window.mozNotification || window.webkitNotification;
 	
 	var notify = function (title, options, events, type) {
 		options = options || {};

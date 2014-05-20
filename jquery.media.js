@@ -17,22 +17,20 @@
 		 *     There is no support for File|Blob objects! (...yet)</p>
 		 *
 		 * @example // Defining single media file:
-		 *     $("video").media({src:"movie.mp4",type:'audio/mp4; codecs="mp4a.40.2"'})
+		 * $("video").media({src:"movie.mp4",type:'audio/mp4; codecs="mp4a.40.2"'})
 		 * 
 		 * @example // Define multiple (alternative) media files:
-		 *     $("video").media([
-		 *         {src:"movie.ogg", type:'video/ogg; codecs="theora, vorbis"'},
-		 *         {src:"movie.mp4", type:'video/mp4; codecs="avc1.4D401E, mp4a.40.2"'}
-		 *     ]);
+		 * $("video").media([
+		 *     {src:"movie.ogg", type:'video/ogg; codecs="theora, vorbis"'},
+		 *     {src:"movie.mp4", type:'video/mp4; codecs="avc1.4D401E, mp4a.40.2"'}
+		 * ]);
 		 * 
-		 * @example // Play media:
-		 *     $("video").media("play");
+		 * @example $("video").media("play"); // Play media:
+		 *     
 		 * 
-		 * @example // Pause media:
-		 *     $("video").media("pause");
-		 * 
-		 * @example // Load media - No idea whether keeping this makes much sense.:
-		 *     $("video").media("load");
+		 * @example $("video").media("pause"); // Pause media:
+		 * @example $("video").media("load"); // Load media - No idea whether keeping this makes much sense.:
+		 * @todo Add support for <track>
 		 *
 		 *
 		 * @method $.fn.media

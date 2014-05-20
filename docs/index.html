@@ -32,16 +32,15 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#">jquery.fn</a>
+				<a class="navbar-brand" href="../index.html">jquery.fn</a>
 			</div>
 			<div class="navbar-collapse collapse">
-				<!--
-				<ul class="nav navbar-nav navbar-right">
-					<li><a href="#">Dashboard</a></li>
-					<li><a href="#">Settings</a></li>
-					<li><a href="#">Profile</a></li>
-					<li><a href="#">Help</a></li>
+				<ul class="nav navbar-nav">
+					<li><a href="../index.html">Home</a></li>
+					<li class="active"><a href="./index.html">Docs</a></li>
+					<li><a href="../tests/index.html">Tests</a></li>
 				</ul>
+				<!-- Coming soon! ... maybe ... perhaps ... don't hold you'r breath.
 				<form class="navbar-form navbar-right">
 					<input type="text" class="form-control" placeholder="Search...">
 				</form>
@@ -76,12 +75,14 @@
 					{{~#if comments~}}
 						<ul class="nav">
 							{{~#each comments~}}
-								{{~#jsdoc-loop-tags "tag:main" tags~}}
-								<li 
-									{{~#jsdoc-loop-tags "tag:boolean" ../tags}} data-jsdoc-{{title}}="true"{{/jsdoc-loop-tags~}}>
-									<a href="#{{jsdoc-uid ../../../file  ../lineNumber}}">{{name}}</a>
-								</li>
-								{{~/jsdoc-loop-tags~}}
+								{{~#if tags~}}
+									{{~#jsdoc-loop-tags "tag:main" tags~}}
+									<li 
+										{{~#jsdoc-loop-tags "tag:boolean" ../tags}} data-jsdoc-{{title}}="true"{{/jsdoc-loop-tags~}}>
+										<a href="#{{jsdoc-uid ../../../file  ../lineNumber}}">{{name}}</a>
+									</li>
+									{{~/jsdoc-loop-tags~}}
+								{{~/if~}}
 							{{~/each~}}
 						</ul>
 					{{~/if~}}
@@ -95,7 +96,6 @@
 		{{/each}}
 	</script>
 	
-	
 	<script data-jsdoc-tmpl="file" type="text/x-handlebars-template">
 		<div class="panel panel-primary" data-jsdoc-file="{{file}}">
 			<span id="{{jsdoc-uid file}}" class="anchor"></span>
@@ -103,57 +103,65 @@
 			{{#if comments}}
 				<ul class="list-group">
 					{{#each comments}}
-						<li class="list-group-item"
-							{{~#jsdoc-loop-tags "tag:boolean" tags}} data-jsdoc-{{title}}="true"{{/jsdoc-loop-tags~}}
-							
-							{{#jsdoc-filter-tags "requires" tags}}
-								data-jsdoc-requires='
-									{{~#jsdoc-json-array this}}
-										{{~name~}}
-									{{~/jsdoc-json-array~}}'
-							{{~/jsdoc-filter-tags~}}
-							
-							{{#jsdoc-filter-tags "module" tags}}
-								data-jsdoc-module='
-									{{~#jsdoc-json-array this}}
-										{{~name~}}
-									{{~/jsdoc-json-array~}}'
-							{{~/jsdoc-filter-tags~}}
+						<li class="list-group-item{{#if error}} list-group-item-danger{{/if}}"
+							{{~#if tags~}}
+								{{~#jsdoc-loop-tags "tag:boolean" tags}} data-jsdoc-{{title}}="true"{{/jsdoc-loop-tags~}}
+								
+								{{#jsdoc-filter-tags "requires" tags}}
+									data-jsdoc-requires='
+										{{~#jsdoc-json-array this}}
+											{{~name~}}
+										{{~/jsdoc-json-array~}}'
+								{{~/jsdoc-filter-tags~}}
+								
+								{{#jsdoc-filter-tags "module" tags}}
+									data-jsdoc-module='
+										{{~#jsdoc-json-array this}}
+											{{~name~}}
+										{{~/jsdoc-json-array~}}'
+								{{~/jsdoc-filter-tags~}}
+							{{~/if~}}
 						>
 							<span id="{{jsdoc-uid ../file ./lineNumber}}" class="anchor"></span>
 							
 							
 							<span class="badge" title="lineNumber">{{lineNumber}}</span>
 							
-							{{~#jsdoc-loop-tags "tag:main" tags~}}
-								<h5 class="list-group-item-heading" title="{{title}}">
-									{{~name~}}
-									{{~#jsdoc-loop-tags "tag:boolean" ../tags}} <span class="label label-info" title="{{type}}">{{title}}</span>{{~/jsdoc-loop-tags~}}
-								</h5>
-							{{~/jsdoc-loop-tags~}}
-								
+							{{~#if tags~}}
+								{{~#jsdoc-loop-tags "tag:main" tags~}}
+									<h5 class="list-group-item-heading" title="{{title}}">
+										{{~name~}}
+										{{~#jsdoc-loop-tags "tag:boolean" ../tags}} <span class="label label-info" title="{{type}}">{{title}}</span>{{~/jsdoc-loop-tags~}}
+									</h5>
+								{{~/jsdoc-loop-tags~}}
+							{{~/if~}}
 							
 							{{#if description}}<div class="well">{{{description}}}</div>{{/if}}
 							
-							{{#jsdoc-group-tags tags}}
-								{{#each this}}
-									{{#jsdoc-tmpl "tag-grouped" title this}}{{else}}
-										<dl>
-											<dt>{{title}}</dt>
-											<dd>
-												<ul class="list-unstyled">
-													{{~#each tags~}}
-														<li>
-															{{~name~}}
-															{{~#if description}}<pre>{{description}}</pre>{{/if~}}
-														</li>
-													{{~/each~}}
-												</ul>
-											</dd>
-										</dl>
-									{{/jsdoc-tmpl}}
-								{{/each}}
-							{{/jsdoc-group-tags}}
+							
+							{{#if error}}<div class="well">{{error}}</div>{{/if}}
+							
+							{{~#if tags~}}
+								{{#jsdoc-group-tags tags}}
+									{{#each this}}
+										{{#jsdoc-tmpl "tag-grouped" title this}}{{else}}
+											<dl>
+												<dt>{{title}}</dt>
+												<dd>
+													<ul class="list-unstyled">
+														{{~#each tags~}}
+															<li>
+																{{~name~}}
+																{{~#if description}}<pre>{{description}}</pre>{{/if~}}
+															</li>
+														{{~/each~}}
+													</ul>
+												</dd>
+											</dl>
+										{{/jsdoc-tmpl}}
+									{{/each}}
+								{{/jsdoc-group-tags}}
+							{{~/if}}
 						</li>
 					{{/each}}
 				</ul>
@@ -184,7 +192,7 @@
 						<li>
 							{{name}}
 							{{#if type}}
-								{{jsdoc-tmpl "tag-param" type.type type}}
+								{{jsdoc-tmpl "type" type.type type}}
 							{{/if}}
 							{{#if description}}<pre>{{description}}</pre>{{/if}}
 						</li>
@@ -209,15 +217,27 @@
 		<dl>
 			<dt>param</dt>
 			<dd>
+				<div class="table-responsive">
 				<table class="table-striped table-bordered table-condensed">
 					{{~#each tags~}}
 						<tr>
 							<th>{{name}}</th>
-							<td>{{jsdoc-tmpl "tag-param" type.type type}}</td>
+							<td>{{jsdoc-tmpl "type" type.type type}}</td>
 							{{#if description}}<td>{{description}}</td>{{/if}}
 						</tr>
 					{{~/each~}}
 				</table>
+				</div>
+			</dd>
+		</dl>
+	</script>
+	<script data-jsdoc-tmpl="tag-grouped-type" type="text/x-handlebars-template">
+		<dl>
+			<dt>type</dt>
+			<dd>
+				{{~#each tags~}}
+					{{jsdoc-tmpl "type" type.type type}}
+				{{~/each~}}
 			</dd>
 		</dl>
 	</script>
@@ -237,46 +257,69 @@
 		</dl>
 	</script>
 	
-	<script data-jsdoc-tmpl="tag-param-NameExpression" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="type-NameExpression" type="text/x-handlebars-template">
 		&nbsp;<span class="label label-default" data-type="{{type}}">{{name}}</span>
 	</script>
-	<script data-jsdoc-tmpl="tag-param-OptionalType" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="type-OptionalType" type="text/x-handlebars-template">
 		<span data-type="{{type}}">
 			<span class="badge pull-right">optional</span>
-			{{jsdoc-tmpl "tag-param" expression.type expression}}
+			{{jsdoc-tmpl "type" expression.type expression}}
 		 </span>
 	</script>
-	<script data-jsdoc-tmpl="tag-param-UnionType" type="text/x-handlebars-template">
-		<ul data-type="{{type}}">
+	<script data-jsdoc-tmpl="type-UnionType" type="text/x-handlebars-template">
+		<ul data-type="{{type}}" class="list-unstyled">
 			{{#each elements}}
-				<li>{{jsdoc-tmpl "tag-param" type}}</li>
+				<li>{{jsdoc-tmpl "type" type}}</li>
 			{{/each}}
 		</ul>
 	</script>
-	<script data-jsdoc-tmpl="tag-param-TypeApplication" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="type-TypeApplication" type="text/x-handlebars-template">
 		<div data-type="{{type}}">
 			{{~#if expression}}
-				{{~jsdoc-tmpl "tag-param" expression.type expression~}}
+				{{~jsdoc-tmpl "type" expression.type expression~}}
 			{{~/if~}}
 			<ul>
 				{{~#each applications}}
-					<li>{{jsdoc-tmpl "tag-param" type}}</li>
+					<li>{{jsdoc-tmpl "type" type}}</li>
 				{{~/each~}}
 			</ul>
 		</div>
 	</script>
-	<script data-jsdoc-tmpl="tag-param-RecordType" type="text/x-handlebars-template">
+	<script data-jsdoc-tmpl="type-RecordType" type="text/x-handlebars-template">
 		<table data-type="{{type}}">
 			{{#each fields}}
 				<tr data-type="{{type}}">
 					<th><code>{{key}}</code></th>
 					{{#if value}}
-						<td>{{jsdoc-tmpl "tag-param" value.type value}}</td>
+						<td>{{jsdoc-tmpl "type" value.type value}}</td>
 					{{/if}}
 				</tr>
 			{{/each}}
 		</table>
 	</script>
+	
+	
+	
+	
+	<script id="evalModal" type="text/x-handlebars-template">
+		<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="jsdoc-example" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title" id="jsdoc-example">example</h4>
+					</div>
+					<div class="modal-body"><pre class="a"></pre><hr /><pre class="b">Loading...</pre></div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</script>
+	
+	
+	
 	
 	
 	<script src="../external/require/require.js"></script>
@@ -298,10 +341,16 @@
 			doctrine: "../external/doctrine/doctrine",
 			
 			"jquery.draw": "../jquery.draw",
+			"jquery.blob": "../jquery.blob",
+			"jquery.dataURL": "../jquery.dataURL",
+			"jquery.save": "../jquery.save",
+			
+			
 			"jquery.media": "../jquery.media",
 			"jquery.stream": "../jquery.stream",
 			"jquery.jsdoc": "../jquery.jsdoc",
 			
+			"jquery.notification": "../jquery.notification",
 			"jquery.notification.bootstrap": "../jquery.notification.bootstrap",
 		}
 	});
@@ -318,15 +367,13 @@
 	<script src="../jquery.notification.bootstrap.js"></script>
 	
 	<script src="../jquery.draw.js"></script>
-	<script>
-	// Change $.notification to use bootstrap alerts by default.
-	$.notification.defaultType = "bootstrap";
-	</script>
 	
 	
 	
 	<script>
 	$(function(){
+		var uId = 0;
+		
 		var paramTypes = {
 			"tag:boolean":["global","inner","instance","private","protected","public","readonly","static"],
 			"tag:main":["function","method"]
@@ -421,7 +468,7 @@
 			}
 		});
 		
-		var uId = 0, uIdMap = {};
+		var uIdMap = {};
 		Handlebars.registerHelper('jsdoc-uid', function(options) {
 			var args = $.makeArray(arguments);
 				args.pop();
@@ -471,7 +518,6 @@
 		
 		$body.scrollspy({ target: "#sidebar", offset:50 });
 		
-		
 		var loadFiles = function (files) {
 			var n1 = $.notification("Loading files to generate documentation, please wait", {useNative:false});
 			
@@ -484,12 +530,12 @@
 					sloppy: true,
 					lineNumbers: true
 				},
-				false
+				true
 			).then(
 				function(files){
 					n1.close()
 					var n2 = $.notification("Parsing files to generate documentation, please wait", {useNative:false});
-					
+					console.log(files);
 					loadParsedFiles(files);
 					
 					n2.close();
@@ -518,6 +564,9 @@
 		loadFiles(
 			[
 				"../jquery.draw.js",
+				"../jquery.blob.js",
+				"../jquery.dataURL.js",
+				"../jquery.save.js",
 				"../jquery.media.js",
 				"../jquery.notification.js",
 				"../jquery.stream.js",
@@ -526,108 +575,115 @@
 		);
 		
 		
+		var tmplEvalModal = Handlebars.compile($("#evalModal").html());
 		
-	});
-	</script>
-	
-	
-	<script>
-(function($){
-
-
-/* WIP
- * Clickable @example[s]
- */
-$("body")
-.on("click","pre.jsdoc-param-example",function(){
-    var $this = $(this),
-    	code = $this.text(),
-    	result;
-	var $parents = $this.parents("[data-jsdoc-file]"),
-		_obj = {};
-	
-	$parents.find("[data-jsdoc-module][data-jsdoc-requires]").each(function(){
-		var $this = $(this),
-			m = $this.data("jsdoc-module"),
-			r = $this.data("jsdoc-requires");
-		
-		if (m)
-		$.each(m,function(i,v){
-			_obj[v] = true;
-		});
-		
-		if (r)
-		$.each(r,function(i,v){
-			_obj[v] = true;
-		});
-	});
-	
-	var _arr = [];
-	$.each(_obj, function(k){ _arr.push(k) });
-	
-	
-	
-	var def = new $.Deferred();
-	
-	
-	
-	require(_arr,function(){
-		try {
-			var result = eval(code);
+		$body.on("click","pre.jsdoc-param-example", function(){
+			var $this = $(this),
+				code = $this.text(),
+				result;
+			var $parents = $this.parents("[data-jsdoc-file]"),
+				_obj = {};
 			
-			// unwrap
-			$.when(result)
-			.then(
-				function(r) {def.resolve(r);},
-				function(err) {def.reject(err);}
-			);
-		} catch (err) {
-			def.reject(err + "")
-		}
-		
-		
-	}, def.reject)
-	
-	
-	var $modal = $(
-		'<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="jsdoc-example" aria-hidden="true">'
-			+'<div class="modal-dialog">'
-				+'<div class="modal-content">'
-					+'<div class="modal-header">'
-						+'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'
-						+'<h4 class="modal-title" id="jsdoc-example">example</h4>'
-					+'</div>'
-					+'<div class="modal-body"><pre class="a"></pre><hr /><pre class="b">Loading...</pre></div>'
-					+'<div class="modal-footer">'
-						+'<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
-						//+'<button type="button" class="btn btn-primary">Save changes</button>'
+			$parents.find("[data-jsdoc-module][data-jsdoc-requires]").each(function(){
+				var $this = $(this),
+					m = $this.data("jsdoc-module"),
+					r = $this.data("jsdoc-requires");
+				
+				if (m)
+				$.each(m,function(i,v){
+					_obj[v] = true;
+				});
+				
+				if (r)
+				$.each(r,function(i,v){
+					_obj[v] = true;
+				});
+			});
+			
+			var _arr = [];
+			$.each(_obj, function(k){ _arr.push(k) });
+			
+			
+			var def = new $.Deferred();
+			
+			
+			require(_arr,function(){
+				try {
+					var result = eval(code);
+					
+					console.log("result", result);
+					
+					if (result === undefined) {
+						return def.resolve(result);
+					}
+					
+					// unwrap
+					$.when(result)
+					.then(
+						function(r) {def.resolve(r);},
+						function(err) {def.reject(err);}
+					);
+				} catch (err) {
+					def.reject(err + "")
+				}
+				
+				
+			}, def.reject)
+			
+			
+			var $modal = $(
+				'<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="jsdoc-example" aria-hidden="true">'
+					+'<div class="modal-dialog">'
+						+'<div class="modal-content">'
+							+'<div class="modal-header">'
+								+'<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>'
+								+'<h4 class="modal-title" id="jsdoc-example">example</h4>'
+							+'</div>'
+							+'<div class="modal-body"><pre class="a"></pre><hr /><pre class="b">Loading...</pre></div>'
+							+'<div class="modal-footer">'
+								+'<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>'
+							+'</div>'
+						+'</div>'
 					+'</div>'
 				+'</div>'
-			+'</div>'
-		+'</div>'
-		)
-		.prependTo("body")
-		.on('hide.bs.modal', function (e) {
-			def.reject("ABORT");
-		})
-		.on('hidden.bs.modal', function (e) {
-			$(this).remove();
+				)
+				.prependTo("body")
+				.on('hide.bs.modal', function (e) {
+					def.reject("ABORT");
+				})
+				.on('hidden.bs.modal', function (e) {
+					$(this).remove();
+				});
+			
+			$modal.find("pre.a").text(code);
+				$modal.modal("show");
+			
+			def.always(function(result){
+				console.info("result", result);
+				console.info("result === undefined", result === undefined);
+				if (result === undefined) {
+					$modal.find("pre.b").text("Undefined");
+					$modal.modal("hide");
+					
+				} else if (result instanceof $) {
+					$modal.find("pre.b").replaceWith(result);
+					
+				} else {
+					$modal.find("pre.b").text(JSON.stringify(result,null,"  "));
+				}
+			});
+			def.fail(function(){
+				$modal.find("pre.b").addClass("bg-warning");
+			});
 		});
-	
-	$modal.find("pre.a").text(code);
-		$modal.modal("show");
-	
-	def.always(function(result){
-		$modal.find("pre.b").text(JSON.stringify(result,null,"  "));
+		
 	});
-	def.fail(function(){
-		$modal.find("pre.b").addClass("bg-warning");
-	});
-});
-
-
-}(jQuery));
 	</script>
+	
+	
+	
+	
+	
 	
 	
 </body>
