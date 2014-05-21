@@ -1,5 +1,4 @@
 /**
- * @todo Bugfix & Cleanup
  * @copyright Copyright 2014 Wendelin Thomas. All rights reserved
  * Licensed under the MIT License.
  * @see https://github.com/wendelin/jquery.fn/blob/gh-pages/LICENSE.md
@@ -403,10 +402,12 @@ if (typeof define === "function" && define.amd) {
 			if (!/^image\//.test(blob.type)) return new $.Deferred().reject("Cannot draw blob to canvas. Wrong data type: " + blob.type);
 			try {
 				var url = $.blob.createURL(blob),
-					def = $.draw.url2canvas(url, canvas, resize)
+					def = (
+						$.draw.url2canvas(url, canvas, resize)
 						.always(function(){
 							$.blob.revokeURL(url);
-						});
+						})
+					);
 			} catch(err) {
 				var def = new $.Deferred().resolve(err);
 			}
@@ -423,8 +424,6 @@ if (typeof define === "function" && define.amd) {
 	 * @default 0
 	 */
 	$.draw.debug = 0;
-	
-	
 	
 	
 	/**
