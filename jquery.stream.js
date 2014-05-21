@@ -8,8 +8,6 @@
 
 
 (function($){
-	var DEBUG = true;
-	
 	var MediaStream = window.MediaStream || webkitMediaStream || mozMediaStream;
 	
 	
@@ -45,7 +43,7 @@
 			);
 		
 		if (getUserMedia) return (function(options){
-			if (DEBUG) console.info("$.stream", options);
+			if ($.stream.debug) console.info("$.stream", options);
 			options = (
 				$.isPlainObject(options)
 				? {
@@ -73,6 +71,16 @@
 		
 		$.error("Browser does not support: getUserMedia");
 	}());
+	
+	
+	/**
+	 * Debug toggler
+	 *
+	 * @parameter $.stream.debug
+	 * @type {Number}
+	 * @default 0
+	 */
+	$.stream.debug = 0;
 	
 	
 	/**
@@ -147,11 +155,11 @@
 			return (
 				("mozSrcObject" in document.createElement("video"))
 				? function (target, stream) {
-					if (DEBUG) console.info("$.stream.attach", target, stream);
+					if ($.stream.debug) console.info("$.stream.attach", target, stream);
 					$(target).prop("mozSrcObject", stream);
 				}
 				: function (target, stream) {
-					if (DEBUG) console.info("$.stream.attach", target, stream);
+					if ($.stream.debug) console.info("$.stream.attach", target, stream);
 					$(target)
 						.data("MediaStream", stream)
 						.prop("src",
@@ -171,7 +179,7 @@
 			return (
 				("mozSrcObject" in document.createElement("video"))
 				? function (target) {
-					if (DEBUG) console.info("$.stream.stop", target);
+					if ($.stream.debug) console.info("$.stream.stop", target);
 					if (target instanceof MediaStream) {
 						target.stop();
 					} else {
@@ -184,7 +192,7 @@
 					}
 				}
 				: function (target) {
-					if (DEBUG) console.info("$.stream.stop", target);
+					if ($.stream.debug) console.info("$.stream.stop", target);
 					if (target instanceof MediaStream) {
 						target.stop();
 					} else {
@@ -285,7 +293,7 @@ $.getUserMedia({video:true})
 			options = $.isPlainObject(options) ? options : {autoplay:!!options};
 			qType = qType || "fx";
 			
-			if (DEBUG) console.info("$.fn.stream", this, stream, options, qType);
+			if ($.stream.debug) console.info("$.fn.stream", this, stream, options, qType);
 			
 			if (stream instanceof MediaStream) {
 				$.stream.attach(this, stream);

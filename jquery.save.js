@@ -51,7 +51,17 @@ if (typeof define === "function" && define.amd) {
 			$(item).save({name:name});
 		}
 	};
-		
+	
+	/**
+	 * Debug toggler
+	 *
+	 * @parameter $.save.debug
+	 * @type {Number|false}
+	 * @default 0
+	 */
+	$.save.debug = 0;
+	
+	
 	/**
 	 * <p>Get a single Blob or array of Blob[s].<p>
 	 * 
@@ -75,7 +85,7 @@ if (typeof define === "function" && define.amd) {
 	 * @returns {Object} $.Deferred instance
 	 */
 	$.fn.save = function (options, qType) {
-		if (DEBUG) console.info("$.fn.save", this, options, qType);
+		if ($.save.debug) console.info("$.fn.save", this, options, qType);
 		options = options || {};
 		if (options.async) {
 			qType = qType || "fx";

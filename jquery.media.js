@@ -6,7 +6,6 @@
  * @module jquery.media
  */
 (function($){
-	var DEBUG = true;
 	
 	$.fn.extend({
 
@@ -45,7 +44,7 @@
 			
 			// Call synchronous method (no queue is really needed)
 			if (/^(play|pause|load)$/.test(media) && !options) {
-				if (DEBUG) console.info("$.fn.media", this, media, options, qType);
+				// if (DEBUG) console.info("$.fn.media", this, media, options, qType);
 				return this.queue(qType, function(){
 					if (this[media]) this[media]();
 					$.dequeue(this, qType);
@@ -55,7 +54,7 @@
 			// Allow shorthand: $("video").media({....}, true);
 			options = $.isPlainObject(options) ? options : {autoplay:!!options};
 			
-			if (DEBUG) console.info("$.fn.media", this, media, options, qType);
+			// if (DEBUG) console.info("$.fn.media", this, media, options, qType);
 			
 			var sources = $.isArray(media) ? media : [media];
 			
