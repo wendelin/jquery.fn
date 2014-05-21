@@ -51,7 +51,7 @@ if (typeof define === "function" && define.amd) {
 	 */
 	$.dataURL = function (source, options) {
 		if ($.dataURL.debug && window.console && console.info) console.info("$.dataURL", source, options);
-		options = options || {type:null, async:false, multiple: false, convert:false};
+		options = $.extend({type:null, async:false, multiple: false, convert:false}, options || {})
 		
 		// Unwrap source if needed
 		source = (
@@ -61,9 +61,6 @@ if (typeof define === "function" && define.amd) {
 		);
 		
 		var output;
-		
-		
-		// implement safe version of: if ($source.is('img[src^="data:"]')) stack = [source.src];
 		
 		switch (true) {
 			case (source instanceof Blob):
@@ -77,7 +74,12 @@ if (typeof define === "function" && define.amd) {
 						})
 					: $.blob.readAsDataURL(source, {async:true})
 				);
+				options.convert = false;	// convert handled
 				break;
+			
+			// if source is HTMLImageElement using a dataURL, grab dataURL.
+			case (source && source.tagName && source.tagName.toLowerCase() === "img" && source.src && /^data:/.test(source.src)):
+				source = source.src;
 				
 			case ($.dataURL.is(source)):
 				if (options.convert) {
@@ -88,6 +90,7 @@ if (typeof define === "function" && define.amd) {
 							return $.dataURL.fromCanvas(canvas, options)
 						})
 					);
+					options.convert = false;	// convert handled
 				} else {
 					output = source;
 				}
@@ -106,19 +109,22 @@ if (typeof define === "function" && define.amd) {
 						$.dataURL(source[0], options)
 					)
 				);
+				options.convert = false;	// convert handled
 				break;
 			
 			case ($(source).is("canvas") && ! options.convert):
-				output = $.dataURL.fromCanvas(source, options.type, options.quality);
+				output = $.dataURL.fromCanvas(source, options);
+				options.convert = true;
 				break;
 				
 			case ($(source).is("img,canvas,video")):
 				output = (
 					$.dataURL.fromCanvas(
 						$.draw.element2canvas(source, document.createElement("canvas"), options),
-						options.type, options.quality
+						options
 					)
 				);
+				options.convert = false;	// convert handled
 				break;
 				
 			default:
@@ -142,69 +148,6 @@ if (typeof define === "function" && define.amd) {
 		}
 		
 		return output;
-		
-		
-		/*
-		var $source = $(source).first(),
-			source = $source.get("0"),
-			stack;
-		
-		if ($source.is('img[src^="data:"]')) stack = [source.src];
-		else if ($source.is("img,canvas,video")) {
-			stack = [
-				$.dataURL.fromCanvas(
-					$.draw.elementToCanvas(source, document.createElement("canvas"), options),
-					options.type, options.quality
-				)
-			];
-			options.convert = false;	// No conversion needed, all convert possibilities covered here
-		}
-		else if ($source.is("canvas")) stack = [$.dataURL.toBlob(
-			$.dataURL.fromCanvas(source, options.type, options.quality)
-		)];
-		
-		if (options.async) {
-			if (source instanceof Blob) {
-				stack = [source];
-				stack = $.map(stack, function(blob){
-					return (
-						options.convert
-						? $.draw.blob2canvas(blob, document.createElement("canvas"), options)
-						.then(function(canvas){
-							return $.dataURL.fromCanvas(canvas, options)
-						})
-						: $.blob.readAsDataURL(blob,{async:options.async})
-					);
-				});
-			} else if ($source.is('input[type="file"]')) {
-				stack = $.makeArray(source.files);
-				if (!options.multiple) stack = stack.slice(0,1);
-				stack = $.map(stack, function(blob){
-					return (
-						options.convert
-						? $.draw.blob2canvas(blob, document.createElement("canvas"), options)
-						.then(function(canvas){
-							return $.dataURL.fromCanvas(canvas, options)
-						})
-						: $.blob.readAsDataURL(blob,{async:options.async})
-					);
-				});
-			
-			} else if (options.convert) {
-				stack = [$.draw.url2canvas(stack[0], document.createElement("canvas"), options)
-				.then(function(canvas){
-					return $.dataURL.fromCanvas(canvas, options)
-				})];
-			}
-			
-			return $.when.apply($.when, stack);
-			
-		} else if (options.convert) {
-			$.error("$.blob: forced conversion of source (" + source + ") cannot be done synchronously");
-		}
-		
-		return options.multiple ? stack : stack[0];
-		*/
 	};
 	$.extend($.dataURL, {
 		/**

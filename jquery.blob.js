@@ -15,8 +15,6 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
-	var DEBUG = false;
-	
 	
 	/**
 	 * Convert number of bytes to human readable format.
@@ -54,47 +52,99 @@ if (typeof define === "function" && define.amd) {
 	 */
 	$.blob = function (source, options) {
 		if ($.blob.debug && window.console && console.info) console.info("$.blob", source, options);
-		options = options || {type:null, async:false, multiple: false, convert:false};
+		options = $.extend({type:null, async:false, multiple: false, convert:false}, options || {})
 		
-		var $source = $(source).first(),
-			source = $source.get("0"),
-			stack;
+		// Unwrap source if needed
+		source = (
+			(source instanceof $)
+			? source.get(0)
+			: source
+		);
 		
-		if (source instanceof Blob) stack = [source];
-		else if ($source.is('img[src^="data:"]')) stack = [$.dataURL.toBlob(source.src)]
-		else if ($source.is('input[type="file"]')) stack = $.makeArray(source.files);
-		else if (!$source.is("canvas")) {
-			stack = [$.dataURL.toBlob(
-				$.dataURL.fromCanvas(
-					$.draw.element2canvas(source, document.createElement("canvas"), options),
-					options
-				)
-			)];
-			options.convert = false;	// No conversion needed, all convert possibilities covered here
-		}
-		else {
-			stack = [$.dataURL.toBlob(
-				$.dataURL.fromCanvas(source, options.type, options.quality)
-			)];
-			options.type = options.quality = null;	// Any quality / type conversion is done
-		}
+		var output;
 		
-		if (options.async) {
-			if (!options.multiple) stack = stack.slice(0,1);
+		switch (true) {
+			case (source instanceof Blob):
+				if (options.convert) {
+					if (!options.async) $.error("Blob conversion can only be done asynchronously");
+					output = $.blob.convert(source, options)
+					options.convert = false;	// convert handled
+				} else {
+					output = source;
+				}
+				break;
 			
-			if (options.convert) {
-				stack = $.map(stack, function(blob){
-					return $.blob.convert(blob,options);
-				});
-			}
-			return $.when.apply($.when, stack);
+			// if source is HTMLImageElement using a dataURL, grab dataURL.
+			case (source && source.tagName && source.tagName.toLowerCase() === "img" && source.src && /^data:/.test(source.src)):
+				source = source.src;
+				
+			case ($.dataURL.is(source)):
+				if (options.convert) {
+					if (!options.async) $.error("dataURL conversion can only be done asynchronously");
+					output = (
+						$.draw.url2canvas(source, document.createElement("canvas"), options)
+						.then(function(canvas){
+							return $.blob.fromCanvas(canvas, options)
+						})
+					);
+					options.convert = false;	// convert handled
+				} else {
+					output = $.dataURL.toBlob(source);
+				}
+				break;
 			
-		} else if (options.convert) {
-			$.error("$.blob: forced conversion of source (" + source + ") cannot be done synchronously");
+			case ($(source).is('input[type="file"]')):
+				source = $.makeArray($(source).prop("files"));
+				// NO BREAK, continue to next
+			case ($.isArray(source)):
+				output = (
+					(options.multiple)
+					? $.map(source, function (v, i) {
+						return $.blob(v, options);
+					})
+					: (
+						$.blob(source[0], options)
+					)
+				);
+				options.convert = false;	// convert handled
+				break;
+			
+			case ($(source).is("canvas") && ! options.convert):
+				output = $.blob.fromCanvas(source, options.type, options.quality);
+				options.convert = true;
+				break;
+				
+			case ($(source).is("img,canvas,video")):
+				output = (
+					$.blob.fromCanvas(
+						$.draw.element2canvas(source, document.createElement("canvas"), options),
+						{type:options.type, quality:options.quality}	// no "async"
+					)
+				);
+				options.convert = false;	// convert handled
+				break;
+				
+			default:
+				if (!options.async) $.error("source not supported");
+				output = new $.Deferred();
+				output.reject("source not supported: " + source);
 		}
 		
-		return options.multiple ? stack : stack[0];
-
+		// "multiple" option => force output into array
+		if (options.multiple && !$.isArray(output)) {
+			output = [output];
+		}
+		
+		// async mode => force output into async wrapping
+		if (options.async && !(output instanceof $.Deferred)) {
+			output = (
+				$.isArray(output)
+				? $.when.apply($.when, output)
+				: $.when(output)
+			)
+		}
+		
+		return output;
 	};
 	$.extend($.blob, {
 		/**
@@ -153,6 +203,41 @@ if (typeof define === "function" && define.amd) {
 			return (humanReadable ? _readablizeBytes(blob.size) : blob.size);
 		},
 		
+		
+		/**
+		 * Get Blob from HTMLCanvasElement.
+		 *
+		 * @method $.blob.fromCanvas
+		 * @param {HTMLCanvasElement} canvas
+		 * @param {Object.<({
+		 *   async:Boolean.<({true})>,
+		 *   type:String.<({
+		 *     "image/jpeg",
+		 *     "image/webp"
+		 *   })>,
+		 *   quality:Integer
+		 * })>=} options
+		 * @returns {$.Deferred instance}
+		 */
+		fromCanvas: function (canvas, options) {
+			if ($.blob.debug > 2 && window.console && console.log) console.log("$.blob.fromCanvas", canvas, options);
+			if (!options || !options.async) $.error("$.blob." + method + ": Cannot do synchronously!");
+			canvas = (canvas instanceof $) ? canvas.get(0) : canvas;
+			options = options || {};
+			var def = new $.Deferred();
+			try {
+				(
+					(/^image\/(jpeg|webp)$/.test(options.type))
+					? canvas.toBlob(def.resolve, options.type, ((options.quality||1)/1))
+					: canvas.toBlob(def.resolve, options.type)
+				);
+			} catch (err) {
+				def.reject(err);
+			}
+			return def;
+		},
+		
+		
 		/**
 		 * Blob/File converter that supports changing of type & dimensions.
 		 *
@@ -168,6 +253,18 @@ if (typeof define === "function" && define.amd) {
 			options = options || {};
 			if (!options.async) $.error("$.blob.convert: Cannot convert blob synchronously.");
 			
+			return (
+				$.draw.blob2canvas(blob, document.createElement("canvas"), options)
+				.then(function(canvas){
+					return $.blob.fromCanvas(canvas, options)
+				})
+			);
+			
+			
+			/**
+			 * @todo Cleanup
+			 */
+			/* JUNK - perhaps some can be recycled
 			var def = $.Deferred(),
 				stack = $.draw.blob2canvas(blob, document.createElement("canvas"), options);
 			
@@ -200,6 +297,7 @@ if (typeof define === "function" && define.amd) {
 			}, def.reject, def.notify);
 			
 			return def;
+			*/
 		},
 		
 		/**
