@@ -8,17 +8,28 @@ require(["jquery.blob"], function ($) {
 	 * $.blob
 	 */
 	asyncTest("$.blob", function() {
-		expect(1);
-		var def = $.blob(tURL, {async:true})
-		def.then(
-			function(arg) {
-				ok(arg , arg);
+		var i = 0;
+		expect(++i);
+		$.blob(tURL, {async:true})
+		.always(function(){expect(++i);})
+		.then(
+			function(blob) {
+				ok((blob instanceof Blob && blob.type === "image/gif"), "dataURL (image/gif) => Blob (" + blob.type + ")");
+				return $.blob(tURL2, {async:true, convert:true, type:"image/png"})
 			},
 			function(err) {
-				ok(false , err);
+				ok(false, "dataURL => Blob: " + err);
 			}
-		);
-		def.always(function(){start()});
+		)
+		.then(
+			function(blob) {
+				ok(blob instanceof Blob && blob.type === "image/png", "dataURL (image/gif) =[convertType]=> Blob (" + blob.type + ")");
+			},
+			function(err) {
+				ok(false, "dataURL (image/gif) =[convertType]=> Blob: " + err);
+			}
+		)
+		.always(function(){start()});
 	});
 	
 
