@@ -9,7 +9,7 @@
 (function (factory) {
 if (typeof define === "function" && define.amd) {
 	// AMD. Register as an anonymous module depending on jQuery.
-	define("jquery.blob",["jquery"], factory);
+	define("jquery.blob",["jquery","jquery.dataURL"], factory);
 } else {
 	// No AMD. Register plugin with global jQuery object.
 	factory(jQuery);
