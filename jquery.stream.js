@@ -5,9 +5,15 @@
  * @requires jquery
  * @module jquery.stream
  */
-
-
-(function($){
+(function (factory) {
+if (typeof define === "function" && define.amd) {
+	// AMD. Register as an anonymous module depending on jQuery.
+	define("jquery.stream",["jquery"], factory);
+} else {
+	// No AMD. Register plugin with global jQuery object.
+	factory(jQuery);
+}
+}(function ($) {
 	var MediaStream = window.MediaStream || webkitMediaStream || mozMediaStream;
 	
 	
@@ -108,6 +114,7 @@
 	 * });
 	 *
 	 * @example // Record 5 seconds of video and audio.
+	 * require(["jquery.blob"], function($){
 	 * $.stream({video:true,audio:true})
 	 * .then(function(stream){
 	 *     return $.stream.record(stream,5000)
@@ -117,7 +124,8 @@
 	 *         return blob;
 	 *     });
 	 * });
-	 *
+	 * });
+	 * 
 	 * @public
 	 * @method $.stream.record
 	 * @param {MediaStream} stream
@@ -326,10 +334,6 @@ $.getUserMedia({video:true})
 			});
 		}
 	});
-
-
-if ( typeof define === "function" && define.amd ) {
-	define( "jquery.stream", [], function () { return jQuery; } );
-}
-
-}(jQuery));
+	
+	return $;
+}));
