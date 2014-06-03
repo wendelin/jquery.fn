@@ -156,7 +156,6 @@ if (typeof define === "function" && define.amd) {
 		 */
 		debug: 0,
 		
-		
 		/**
 		 * File/Blob URL.
 		 * This method makes it possible to get a direct reference to a Blob/File.
@@ -203,7 +202,6 @@ if (typeof define === "function" && define.amd) {
 			return (humanReadable ? _readablizeBytes(blob.size) : blob.size);
 		},
 		
-		
 		/**
 		 * Get Blob from HTMLCanvasElement.
 		 *
@@ -236,7 +234,6 @@ if (typeof define === "function" && define.amd) {
 			}
 			return def;
 		},
-		
 		
 		/**
 		 * Blob/File converter that supports changing of type & dimensions.
@@ -353,6 +350,33 @@ if (typeof define === "function" && define.amd) {
 					)
 				)
 			);
+		},
+		
+		/**
+		 * Return the name associated with the blob.
+		 * If none exists attempt to generate one and when not running in readOnly mode
+		 * stamp that name onto that blob.
+		 * 
+		 * Sidenote: Hal refused to let me call this method "name".
+		 * 
+		 * @method $.blob.stamp
+		 * @param {Blob|File} blob
+		 * @param {Boolean} readOnly
+		 * @returns {String}
+		 */
+		stamp: function (blob, readOnly) {
+			if (blob instanceof Blob) {
+					if (!("name" in blob)) {
+						var name = {
+							"image/jpeg":"image.jpg",
+							"image/gif":"image.gif",
+							"image/png":"image.png"
+						}[blob.type];
+						
+						if (name && !readOnly) blob.name = name;
+					}
+				if ("name" in blob) return blob.name;
+			}
 		}
 	});
 	
