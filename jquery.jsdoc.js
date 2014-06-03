@@ -6,6 +6,7 @@
  * @see https://github.com/Constellation/doctrine
  * @requires jquery
  * @requires doctrine
+ * @requires jquery.blob
  * @module jquery.jsdoc
  */
 
