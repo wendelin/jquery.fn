@@ -8,7 +8,7 @@
  */
 (function (factory) {
 if (typeof define === "function" && define.amd) {
-	// AMD. Register as an anonymous module depending on jQuery.
+	// AMD. Register as a module depending on jQuery.
 	define("jquery.save",["jquery"], factory);
 } else {
 	// No AMD. Register plugin with global jQuery object.
