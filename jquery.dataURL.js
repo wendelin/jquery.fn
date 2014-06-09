@@ -15,7 +15,7 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
-	
+	"use strict";
 
 	/**
 	 * Convert number of bytes to human readable format.

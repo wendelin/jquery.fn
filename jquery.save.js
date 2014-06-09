@@ -15,6 +15,7 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
+	"use strict";
 	
 	/**
 	 * <p>Save file</p>

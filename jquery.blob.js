@@ -7,6 +7,7 @@
  * @module jquery.blob
  */
 (function (factory) {
+
 if (typeof define === "function" && define.amd) {
 	// AMD. Register as an anonymous module depending on jQuery.
 	define("jquery.blob",["jquery","jquery.dataURL"], factory);
@@ -15,6 +16,7 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
+	"use strict";
 	
 	/**
 	 * Convert number of bytes to human readable format.

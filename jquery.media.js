@@ -14,6 +14,7 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
+	"use strict";
 	
 	/**
 	 * <p>This method is used to control media elements (&lt;video&gt;,&lt;audio&gt;).<p>

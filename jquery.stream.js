@@ -14,6 +14,8 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
+	"use strict";
+	
 	var MediaStream = window.MediaStream || webkitMediaStream || mozMediaStream;
 	
 	

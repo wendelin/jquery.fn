@@ -14,6 +14,8 @@ if (typeof define === "function" && define.amd) {
 	factory(jQuery);
 }
 }(function ($) {
+	"use strict";
+	
 	/**
 	 * <p>Drawing method takes visual data from a single given source and "draws" it into each element
 	 * of the context jQuery element set.<p>
