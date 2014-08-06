@@ -522,7 +522,6 @@
 		var loadFiles = function (files) {
 			var n1 = $.notification("Loading files to generate documentation, please wait", {useNative:false});
 			
-			
 			$.jsdoc.asyncParse.files(
 				files,
 				{
@@ -534,12 +533,14 @@
 				true
 			).then(
 				function(files){
-					n1.close()
+					setTimeout(function(){
+						$.when(n1).then(function(n){n.close()});
+					}, 2000);
 					var n2 = $.notification("Parsing files to generate documentation, please wait", {useNative:false});
-					console.log(files);
 					loadParsedFiles(files);
-					
-					n2.close();
+					setTimeout(function(){
+						$.when(n2).then(function(n){n.close()});
+					}, 2000);
 				}
 			);
 			
