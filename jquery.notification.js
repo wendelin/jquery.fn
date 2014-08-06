@@ -67,7 +67,7 @@ if (typeof define === "function" && define.amd) {
 				if (events) $(n).on(events);
 				return n;
 			} else {
-				return fn.types[type](title, options, events);
+				return (fn.types[type]||fn.types[fn.fallbackType])(title, options, events);
 			}
 		};
 		
@@ -77,9 +77,11 @@ if (typeof define === "function" && define.amd) {
 			if (!fn.types[type]) type = fn.defaultType;	// ignore invalid "type" / fallback
 			
 			if (type === "native" && Notification && Notification.permission === "default") {
-				return fn.requestPermission().always(function(){
-					return notify(title, options, events, type);
+				var d = new $.Deferred();
+				fn.requestPermission().always(function(){
+					d.resolve(notify(title, options, events, type));
 				});
+				return d;
 				
 			} else {
 				return notify(title, options, events, type);
@@ -87,6 +89,7 @@ if (typeof define === "function" && define.amd) {
 		};
 		$.extend(fn, {
 			defaultType: (!!Notification ? "native" : "alert"),
+			fallbackType: "alert",
 			types: {
 				alert:function (title, options, events) {
 					if (events && events.show) events.show();
